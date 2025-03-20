@@ -1,0 +1,29 @@
+﻿- type: entity
+  parent: BaseItem
+  id: SignalMonitor
+  name: signal monitor
+  description: A handheld device used for remotely monitoring the value of a connected signal.
+  components:
+  - type: SignalMonitor
+  - type: Sprite
+    layers:
+    - state: geiger_base
+      sprite: Objects/Tools/geiger.rsi
+    - state: geiger_on_idle
+      sprite: Objects/Tools/geiger.rsi
+      map: ["screen_layer"]
+      visible: true
+  - type: DeviceLinkSink
+    ports:
+    - Input
+  - type: DeviceNetwork
+    deviceNetId: Wireless
+    receiveFrequencyId: BasicDevice
+  - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+      enum.SignalMonitorLayers.Screen:
+        screen_layer:
+          Idle: { visible: False }
+          Low: { visible: True, state: geiger_on_high }
+          High: { visible: True, state: geiger_on_idle }
