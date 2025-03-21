@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Content.Server.NPC.Components;
 using Content.Server.NPC.Pathfinding;
 using Content.Server.NPC.Systems;
+using Content.Shared.Physics;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Physics.Components;
@@ -116,7 +117,8 @@ public sealed partial class MoveToOperator : HTNOperator, IHtnConditionalShutdow
                 targetCoordinates,
             range,
             cancelToken,
-            _pathfind.GetFlags(blackboard));
+            _pathfind.GetFlags(blackboard),
+            (int)CollisionGroup.BotImpassible);
 
         if (path.Result != PathResult.Path)
         {

@@ -323,13 +323,14 @@ namespace Content.Server.NPC.Pathfinding
             EntityUid target,
             float range,
             CancellationToken cancelToken,
-            PathFlags flags = PathFlags.None)
+            PathFlags flags = PathFlags.None,
+            int collisionMask = 0)
         {
             if (!TryComp(entity, out TransformComponent? xform) ||
                 !TryComp(target, out TransformComponent? targetXform))
                 return new PathResultEvent(PathResult.NoPath, new List<PathPoly>());
 
-            var request = GetRequest(entity, xform.Coordinates, targetXform.Coordinates, range, cancelToken, flags);
+            var request = GetRequest(entity, xform.Coordinates, targetXform.Coordinates, range, cancelToken, flags, collisionMask);
             return await GetPath(request);
         }
 
@@ -339,9 +340,10 @@ namespace Content.Server.NPC.Pathfinding
             EntityCoordinates end,
             float range,
             CancellationToken cancelToken,
-            PathFlags flags = PathFlags.None)
+            PathFlags flags = PathFlags.None,
+            int collisionMask = 0)
         {
-            var request = GetRequest(entity, start, end, range, cancelToken, flags);
+            var request = GetRequest(entity, start, end, range, cancelToken, flags, collisionMask);
             return await GetPath(request);
         }
 
@@ -425,14 +427,15 @@ namespace Content.Server.NPC.Pathfinding
             return null;
         }
 
-        private PathRequest GetRequest(EntityUid entity, EntityCoordinates start, EntityCoordinates end, float range, CancellationToken cancelToken, PathFlags flags)
+        private PathRequest GetRequest(EntityUid entity, EntityCoordinates start, EntityCoordinates end, float range, CancellationToken cancelToken, PathFlags flags, int collisionMask = 0)
         {
             var layer = 0;
-            var mask = 0;
+            var mask = collisionMask;
 
             if (TryComp<FixturesComponent>(entity, out var fixtures))
             {
-                (layer, mask) = _physics.GetHardCollision(entity, fixtures);
+                (layer, var newmask) = _physics.GetHardCollision(entity, fixtures);
+                mask |= newmask;
             }
 
             return new AStarPathRequest(start, end, flags, range, layer, mask, cancelToken);

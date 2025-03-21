@@ -8,6 +8,7 @@ using Content.Shared.Interaction;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Silicons.Bots;
 using Content.Shared.Emag.Components;
+using Content.Shared.Physics;
 
 namespace Content.Server.NPC.HTN.PrimitiveTasks.Operators.Specific;
 
@@ -76,7 +77,7 @@ public sealed partial class PickNearbyInjectableOperator : HTNOperator
 
                 //Needed to make sure it doesn't sometimes stop right outside it's interaction range
                 var pathRange = SharedInteractionSystem.InteractionRange - 1f;
-                var path = await _pathfinding.GetPath(owner, entity, pathRange, cancelToken);
+                var path = await _pathfinding.GetPath(owner, entity, pathRange, cancelToken, PathFlags.None, (int)CollisionGroup.BotImpassible);
 
                 if (path.Result == PathResult.NoPath)
                     continue;

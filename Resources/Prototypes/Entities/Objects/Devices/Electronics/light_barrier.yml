@@ -1,0 +1,11 @@
+- type: entity
+  parent: BaseItem
+  id: LightBarrier
+  name: light barrier
+  description: Roomba fence!
+  components:
+  - type: Sprite
+    sprite: Objects/Devices/signaller.rsi
+    state: signaller
+  - type: Anchorable
+  - type: LightBarrier
