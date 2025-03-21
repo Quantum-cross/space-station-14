@@ -6,13 +6,12 @@
   components:
   - type: SignalMonitor
   - type: Sprite
+    sprite: Objects/Devices/signal_monitor.rsi
     layers:
-    - state: geiger_base
-      sprite: Objects/Tools/geiger.rsi
-    - state: geiger_on_idle
-      sprite: Objects/Tools/geiger.rsi
+    - state: signal_monitor
+    - state: screen
       map: ["screen_layer"]
-      visible: true
+      visible: false
   - type: DeviceLinkSink
     ports:
     - Input
@@ -24,6 +23,6 @@
     visuals:
       enum.SignalMonitorLayers.Screen:
         screen_layer:
-          Idle: { visible: False }
-          Low: { visible: True, state: geiger_on_high }
-          High: { visible: True, state: geiger_on_idle }
+          Idle: { visible: false }
+          Low: { visible: true, color: red }
+          High: { visible: true, color: lime }

@@ -44,6 +44,7 @@ public sealed partial class AnomalySystem
             if (component.ScannedAnomaly != args.Anomaly)
                 continue;
             UpdateScannerUi(uid, component);
+            RaiseNetworkEvent(new AnomalyChangedEvent(GetNetEntity(uid), args.Stability, args.Severity), uid);
         }
     }
 
@@ -55,6 +56,7 @@ public sealed partial class AnomalySystem
             if (component.ScannedAnomaly != args.Anomaly)
                 continue;
             UpdateScannerUi(uid, component);
+            RaiseNetworkEvent(new AnomalyChangedEvent(GetNetEntity(uid), args.Stability, args.Severity), uid);
         }
     }
 
