@@ -22,7 +22,7 @@ public sealed partial class DeliverySystem : SharedDeliverySystem
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly StationRecordsSystem _records = default!;
     [Dependency] private readonly StationSystem _station = default!;
-    [Dependency] private readonly FingerprintReaderSystem _fingerprintReader = default!;
+    [Dependency] private readonly SharedFingerprintReaderSystem _fingerprintReader = default!;
     [Dependency] private readonly SharedLabelSystem _label = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
 

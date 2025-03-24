@@ -24,7 +24,7 @@ public abstract class SharedDeliverySystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly FingerprintReaderSystem _fingerprintReader = default!;
+    [Dependency] private readonly SharedFingerprintReaderSystem _fingerprintReader = default!;
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;

@@ -94,6 +94,11 @@
   frequency: 1173
 
 - type: deviceFrequency
+  id: SettableFingerprintReader
+  name: device-frequency-prototype-name-fingerprint-reader
+  frequency: 1186
+
+- type: deviceFrequency
   id: MailingUnit
   name: device-frequency-prototype-name-mailing-units
   frequency: 2300

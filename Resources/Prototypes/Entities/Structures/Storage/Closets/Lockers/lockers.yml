@@ -112,6 +112,11 @@
     stateDoorClosed: eng_elec_door
   - type: AccessReader
     access: [ [ "Engineering" ] ]
+  - type: DeviceNetwork
+    deviceNetId: Wireless
+    receiveFrequencyId: SettableFingerprintReader
+  - type: WirelessNetworkConnection
+    range: 20
 
 # Welding supplies
 - type: entity

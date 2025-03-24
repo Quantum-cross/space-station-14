@@ -6,7 +6,7 @@ namespace Content.Shared.FingerprintReader;
 /// Component for checking if a user's fingerprint matches allowed fingerprints
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(FingerprintReaderSystem))]
+[Access(typeof(SharedFingerprintReaderSystem))]
 public sealed partial class FingerprintReaderComponent : Component
 {
     /// <summary>
@@ -14,6 +14,12 @@ public sealed partial class FingerprintReaderComponent : Component
     /// </summary>
     [DataField, AutoNetworkedField]
     public HashSet<string> AllowedFingerprints = new();
+
+    [DataField, AutoNetworkedField]
+    public bool IsUserSettable = false;
+
+    [DataField, AutoNetworkedField]
+    public int FingerprintCapacity = 0;
 
     /// <summary>
     /// Whether to ignore gloves when checking fingerprints.
@@ -32,4 +38,12 @@ public sealed partial class FingerprintReaderComponent : Component
     /// </summary>
     [DataField]
     public LocId? FailGlovesPopup;
+
+    [DataField]
+    public LocId? FailCapacityPopup;
+
+    [DataField]
+    public LocId? FailNearbyPopup;
+
+    public Dictionary<string, SharedFingerprintReaderSystem.SetRequest> ActiveSetRequests = new();
 }
