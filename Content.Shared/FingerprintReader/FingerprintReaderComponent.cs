@@ -1,24 +1,27 @@
+using Content.Shared.Access.Components;
+using Content.Shared.Access.Systems;
 using Robust.Shared.GameStates;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared.FingerprintReader;
 
 /// <summary>
 /// Component for checking if a user's fingerprint matches allowed fingerprints
 /// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(FingerprintReaderSystem))]
-public sealed partial class FingerprintReaderComponent : Component
+[RegisterComponent, NetworkedComponent]
+[Access(typeof(AccessReaderSystem))]
+public sealed partial class FingerprintReaderComponent : AccessReaderComponentBase
 {
     /// <summary>
     /// The fingerprints that are allowed to access this entity.
     /// </summary>
-    [DataField, AutoNetworkedField]
+    [DataField]
     public HashSet<string> AllowedFingerprints = new();
 
     /// <summary>
     /// Whether to ignore gloves when checking fingerprints.
     /// </summary>
-    [DataField, AutoNetworkedField]
+    [DataField]
     public bool IgnoreGloves;
 
     /// <summary>
@@ -32,4 +35,15 @@ public sealed partial class FingerprintReaderComponent : Component
     /// </summary>
     [DataField]
     public LocId? FailGlovesPopup;
+
+    [DataField]
+    public bool TerminateOnDeny;
+}
+
+[Serializable, NetSerializable]
+public sealed class FingerprintReaderComponentState(bool enabled, HashSet<string> allowedFingerprints, bool ignoreGloves) : ComponentState
+{
+    public bool Enabled = enabled;
+    public HashSet<string> AllowedFingerprints = allowedFingerprints;
+    public bool IgnoreGloves = ignoreGloves;
 }

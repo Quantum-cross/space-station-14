@@ -1,7 +1,8 @@
 using System.Linq;
 using Content.Shared.Shuttles.Components;
 using Content.Shared.Examine;
-using Content.Shared.FingerprintReader;
+using Content.Shared.Access.Components;
+using Content.Shared.Access.Systems;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.IdentityManagement;
 using Content.Shared.Interaction.Events;
@@ -24,7 +25,7 @@ public abstract class SharedDeliverySystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly FingerprintReaderSystem _fingerprintReader = default!;
+    [Dependency] private readonly AccessReaderSystem _accessReader = default!;
     [Dependency] private readonly TagSystem _tag = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;
@@ -91,7 +92,7 @@ public abstract class SharedDeliverySystem : EntitySystem
     private bool TryUnlockDelivery(Entity<DeliveryComponent> ent, EntityUid user, bool rewardMoney = true)
     {
         // Check fingerprint access if there is a reader on the mail
-        if (TryComp<FingerprintReaderComponent>(ent, out var reader) && !_fingerprintReader.IsAllowed((ent, reader), user))
+        if (TryComp<AccessReaderComponent>(ent, out var reader) && !_accessReader.IsAllowed(user, (ent, reader)))
             return false;
 
         var deliveryName = _nameModifier.GetBaseName(ent.Owner);

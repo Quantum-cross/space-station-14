@@ -3,6 +3,7 @@ using Content.Server.Cargo.Systems;
 using Content.Server.Station.Systems;
 using Content.Server.StationRecords.Systems;
 using Content.Shared.Delivery;
+using Content.Shared.Access.Systems;
 using Content.Shared.FingerprintReader;
 using Content.Shared.Labels.EntitySystems;
 using Content.Shared.StationRecords;
@@ -22,7 +23,7 @@ public sealed partial class DeliverySystem : SharedDeliverySystem
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly StationRecordsSystem _records = default!;
     [Dependency] private readonly StationSystem _station = default!;
-    [Dependency] private readonly FingerprintReaderSystem _fingerprintReader = default!;
+    [Dependency] private readonly AccessReaderSystem _accessReader = default!;
     [Dependency] private readonly SharedLabelSystem _label = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
 
@@ -59,7 +60,7 @@ public sealed partial class DeliverySystem : SharedDeliverySystem
 
         if (TryComp<FingerprintReaderComponent>(ent, out var reader) && entry.Fingerprint != null)
         {
-            _fingerprintReader.AddAllowedFingerprint((ent.Owner, reader), entry.Fingerprint);
+            _accessReader.AddAllowedFingerprint((ent.Owner, reader), entry.Fingerprint);
         }
 
         Dirty(ent);

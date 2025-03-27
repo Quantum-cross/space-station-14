@@ -1,3 +1,4 @@
+using Content.Shared.Access.Systems;
 using Content.Shared.StationRecords;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -11,15 +12,8 @@ namespace Content.Shared.Access.Components;
 /// and allows checking if something or somebody is authorized with these access levels.
 /// </summary>
 [RegisterComponent, NetworkedComponent]
-public sealed partial class AccessReaderComponent : Component
+public sealed partial class AccessReaderComponent : AccessReaderComponentBase
 {
-    /// <summary>
-    /// Whether or not the accessreader is enabled.
-    /// If not, it will always let people through.
-    /// </summary>
-    [DataField]
-    public bool Enabled = true;
-
     /// <summary>
     /// The set of tags that will automatically deny an allowed check, if any of them are present.
     /// </summary>
@@ -77,6 +71,9 @@ public sealed partial class AccessReaderComponent : Component
     /// </summary>
     [DataField]
     public bool BreakOnAccessBreaker = true;
+
+    [DataField]
+    public bool TerminateOnDeny;
 }
 
 [DataDefinition, Serializable, NetSerializable]

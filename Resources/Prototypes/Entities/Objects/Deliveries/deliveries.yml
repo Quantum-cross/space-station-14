@@ -32,7 +32,8 @@
           False: { visible: false }
   - type: Label
     examinable: false
-  - type: FingerprintReader
+  - type: AccessReader
+    fingerprintEnabled: true
     failPopup: fingerprint-reader-fail
     failGlovesPopup: fingerprint-reader-fail-gloves
   - type: Delivery
