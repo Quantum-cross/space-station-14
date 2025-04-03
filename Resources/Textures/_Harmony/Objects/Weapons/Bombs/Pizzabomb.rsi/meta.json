@@ -8,10 +8,10 @@
     },
     "states": [
         {
-            "name": "icon"
+            "name": "box"
         },
         {
-            "name": "primed"
+            "name": "box-open"
         },
         {
             "name": "box-inhand-right",

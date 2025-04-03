@@ -105,8 +105,14 @@ public sealed class StorageUIController : UIController, IOnSystemChanged<Storage
         else
         {
             // Open at parent position if it's open.
-            if (_ui.TryGetOpenUi<StorageBoundUserInterface>(EntityManager.GetComponent<TransformComponent>(sBui.Owner).ParentUid,
-                    StorageComponent.StorageUiKey.Key, out var bui) && bui.Position != null)
+            // Harmony edit begin
+            // Pizza bomb was giving me errors about the entity not having transform component, so just "try" instead
+            if (EntityManager.TryGetComponent<TransformComponent>(sBui.Owner, out var xform) &&
+                _ui.TryGetOpenUi<StorageBoundUserInterface>(xform.ParentUid,
+                    StorageComponent.StorageUiKey.Key,
+                    out var bui) &&
+                bui.Position != null)
+            // Harmony edit end
             {
                 window.Open(bui.Position.Value);
             }
