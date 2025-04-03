@@ -11,7 +11,7 @@
     examinable: false
     initialBeepDelay: 0
     beepSound: /Audio/Machines/microwave_done_beep.ogg
-    DoPopup: false
+    doPopup: false
   - type: TriggerOnStorageOpen # Timer is triggered on storage open
   - type: ExplodeOnTrigger # Exlosive will trigger when timer trigger is done
   - type: Explosive # Weak explosion in a very small radius. Doesn't break underplating.
