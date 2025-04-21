@@ -25,10 +25,6 @@ namespace Content.Shared.Preferences
     [Serializable, NetSerializable]
     public sealed partial class HumanoidCharacterProfile : ICharacterProfile
     {
-        private static readonly Regex RestrictedNameRegex = new(@"[^A-Za-z0-9 '\-]");
-        private static readonly Regex ICNameCaseRegex = new(@"^(?<word>\w)|\b(?<word>\w)(?=\w*$)");
-
-        public const int MaxNameLength = 32;
         public const int MaxLoadoutNameLength = 32;
         public const int MaxDescLength = 512;
 
@@ -54,7 +50,9 @@ namespace Content.Shared.Preferences
         /// Is this character enabled? (Should it be considered for round start selection?)
         /// </summary>
         [DataField]
-        public bool Enabled;
+        private bool _enabled;
+
+        public bool Enabled => _enabled;
 
         /// <summary>
         /// <see cref="_loadouts"/>
@@ -106,11 +104,6 @@ namespace Content.Shared.Preferences
         public SpawnPriorityPreference SpawnPriority { get; private set; } = SpawnPriorityPreference.None;
 
         /// <summary>
-        /// <see cref="_jobPreferences"/>
-        /// </summary>
-        public IReadOnlySet<ProtoId<JobPrototype>> JobPreferences => _jobPreferences;
-
-        /// <summary>
         /// <see cref="_antagPreferences"/>
         /// </summary>
         public IReadOnlySet<ProtoId<AntagPrototype>> AntagPreferences => _antagPreferences;
@@ -147,7 +140,7 @@ namespace Content.Shared.Preferences
             _antagPreferences = antagPreferences;
             _traitPreferences = traitPreferences;
             _loadouts = loadouts;
-            Enabled = enabled;
+            _enabled = enabled;
         }
 
         /// <summary>Copy constructor</summary>
@@ -341,7 +334,8 @@ namespace Content.Shared.Preferences
             };
         }
 
-        public HumanoidCharacterProfile WithTraitPreference(ProtoId<TraitPrototype> traitId, IPrototypeManager protoManager)
+        public HumanoidCharacterProfile WithTraitPreference(ProtoId<TraitPrototype> traitId,
+            IPrototypeManager protoManager)
         {
             // null category is assumed to be default.
             if (!protoManager.TryIndex(traitId, out var traitProto))
@@ -355,7 +349,8 @@ namespace Content.Shared.Preferences
             if (category != null && !protoManager.TryIndex(category, out traitCategory))
                 return new(this);
 
-            var list = new HashSet<ProtoId<TraitPrototype>>(_traitPreferences) { traitId };
+            var list = new HashSet<ProtoId<TraitPrototype>>(_traitPreferences);
+            list.Add(traitId);
 
             if (traitCategory == null || traitCategory.MaxTraitPoints < 0)
             {
@@ -400,9 +395,11 @@ namespace Content.Shared.Preferences
             };
         }
 
-        public HumanoidCharacterProfile AsEnabled(bool enabled = true)
+        public ICharacterProfile AsEnabled(bool enabledValue = true)
         {
-            return new(this) { Enabled = enabled };
+            var p = Clone();
+            p._enabled = enabledValue;
+            return p;
         }
 
         public string Summary =>
@@ -470,9 +467,9 @@ namespace Content.Shared.Preferences
             {
                 name = GetName(Species, gender);
             }
-            else if (Name.Length > MaxNameLength)
+            else if (Name.Length > ICharacterProfile.MaxNameLength)
             {
-                name = Name[..MaxNameLength];
+                name = Name[..ICharacterProfile.MaxNameLength];
             }
             else
             {
@@ -483,13 +480,13 @@ namespace Content.Shared.Preferences
 
             if (configManager.GetCVar(CCVars.RestrictedNames))
             {
-                name = RestrictedNameRegex.Replace(name, string.Empty);
+                name = ICharacterProfile.RestrictedNameRegex.Replace(name, string.Empty);
             }
 
             if (configManager.GetCVar(CCVars.ICNameCase))
             {
                 // This regex replaces the first character of the first and last words of the name with their uppercase version
-                name = ICNameCaseRegex.Replace(name, m => m.Groups["word"].Value.ToUpper());
+                name = ICharacterProfile.ICNameCaseRegex.Replace(name, m => m.Groups["word"].Value.ToUpper());
             }
 
             if (string.IsNullOrEmpty(name))
@@ -609,6 +606,8 @@ namespace Content.Shared.Preferences
             profile.EnsureValid(session, collection);
             return profile;
         }
+
+        public IReadOnlySet<ProtoId<JobPrototype>> JobPreferences => _jobPreferences;
 
         // sorry this is kind of weird and duplicated,
         /// working inside these non entity systems is a bit wack

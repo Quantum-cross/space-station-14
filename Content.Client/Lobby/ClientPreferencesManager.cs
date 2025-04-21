@@ -48,12 +48,10 @@ namespace Content.Client.Lobby
         {
             if (!Preferences.Characters.TryGetValue(slot, out var characterProfile))
                 return;
-            if (characterProfile is not HumanoidCharacterProfile profile)
-                return;
 
             var characters = new Dictionary<int, ICharacterProfile>(Preferences.Characters)
             {
-                [slot] = new HumanoidCharacterProfile(profile) {Enabled = enable},
+                [slot] = characterProfile.AsEnabled(enable),
             };
             Preferences = new PlayerPreferences(characters, Preferences.AdminOOCColor, Preferences.JobPriorities);
 

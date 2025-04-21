@@ -78,7 +78,7 @@ namespace Content.Server.Database
                 .Property(log => log.Json)
                 .HasConversion(jsonStringConverter);
 
-            modelBuilder.Entity<Profile>()
+            modelBuilder.Entity<HumanoidProfile>()
                 .Property(log => log.Markings)
                 .HasConversion(jsonByteArrayConverter);
 

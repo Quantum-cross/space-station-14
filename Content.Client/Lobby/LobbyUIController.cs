@@ -210,7 +210,7 @@ public sealed class LobbyUIController : UIController, IOnStateEntered<LobbyState
 
         var fixedProfile = EditedProfile.Clone();
         if(_preferencesManager.Preferences!.TryGetHumanoidInSlot(EditedSlot.Value, out var humanoid))
-            fixedProfile = new HumanoidCharacterProfile(EditedProfile) { Enabled = humanoid.Enabled };
+            fixedProfile = new HumanoidCharacterProfile((HumanoidCharacterProfile)EditedProfile.AsEnabled(humanoid.Enabled));
 
         _preferencesManager.UpdateCharacter(fixedProfile, EditedSlot.Value);
         _profileEditor?.SetProfile(EditedSlot.Value);

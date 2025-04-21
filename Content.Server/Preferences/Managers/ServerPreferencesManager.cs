@@ -161,19 +161,16 @@ namespace Content.Server.Preferences.Managers
                 return;
             }
 
-            if (characterProfile is not HumanoidCharacterProfile profile)
-                return;
-
-            profile.Enabled = val;
+            characterProfile = characterProfile.AsEnabled(val);
             var profiles = new Dictionary<int, ICharacterProfile>(curPrefs.Characters)
             {
-                [slot] = new HumanoidCharacterProfile(profile),
+                [slot] = characterProfile,
             };
 
             prefsData.Prefs = new PlayerPreferences(profiles, curPrefs.AdminOOCColor, curPrefs.JobPriorities);
 
             if (ShouldStorePrefs(session.Channel.AuthType))
-                await _db.SaveCharacterSlotAsync(userId, profile, slot);
+                await _db.SaveCharacterSlotAsync(userId, characterProfile, slot);
         }
 
         public async void HandleUpdateJobPrioritiesMessage(MsgUpdateJobPriorities message)

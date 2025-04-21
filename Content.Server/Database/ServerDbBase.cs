@@ -46,13 +46,7 @@ namespace Content.Server.Database
 
             var prefs = await db.DbContext
                 .Preference
-                .Include(p => p.Profiles).ThenInclude(h => h.Jobs)
-                .Include(p => p.Profiles).ThenInclude(h => h.Antags)
-                .Include(p => p.Profiles).ThenInclude(h => h.Traits)
                 .Include(p => p.Profiles)
-                    .ThenInclude(h => h.Loadouts)
-                    .ThenInclude(l => l.Groups)
-                    .ThenInclude(group => group.Loadouts)
                 .Include(p => p.JobPreferences)
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(p => p.UserId == userId.UserId, cancel);
@@ -89,7 +83,7 @@ namespace Content.Server.Database
                 throw new NotImplementedException();
             }
 
-            var oldProfile = db.DbContext.Profile
+            var oldProfile = db.DbContext.HumanoidProfile
                 .Include(p => p.Preference)
                 .Where(p => p.Preference.UserId == userId.UserId)
                 .Include(p => p.Jobs)
@@ -197,7 +191,29 @@ namespace Content.Server.Database
             await db.DbContext.SaveChangesAsync();
         }
 
-        private static HumanoidCharacterProfile ConvertProfiles(Profile profile)
+        /// <summary>
+        /// Convert a generic database type Profile to a generic content type ICharacterProfile
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private static ICharacterProfile ConvertProfiles(BaseProfile profile)
+        {
+            return profile switch
+            {
+                HumanoidProfile humanoid => ConvertProfiles(humanoid),
+                BorgProfile borg => ConvertProfiles(borg),
+                _ => throw new NotImplementedException($"Profile type {profile.GetType()} not implemented")
+            };
+        }
+
+        /// <param name="profile">
+        ///     <summary>
+        ///     Convert a database type HumanoidProfile to a content type HumanoidCharacterProfile
+        ///     </summary>
+        /// </param>
+        /// <returns></returns>
+        private static HumanoidCharacterProfile ConvertProfiles(HumanoidProfile profile)
         {
             var jobs = profile.Jobs.Select(j => new ProtoId<JobPrototype>(j.JobName)).ToHashSet();
             var antags = profile.Antags.Select(a => new ProtoId<AntagPrototype>(a.AntagName));
@@ -279,9 +295,9 @@ namespace Content.Server.Database
             );
         }
 
-        private static Profile ConvertProfiles(HumanoidCharacterProfile humanoid, int slot, Profile? profile = null)
+        private static BaseProfile ConvertProfiles(HumanoidCharacterProfile humanoid, int slot, HumanoidProfile? profile = null)
         {
-            profile ??= new Profile();
+            profile ??= new HumanoidProfile();
             var appearance = (HumanoidCharacterAppearance) humanoid.CharacterAppearance;
             List<string> markingStrings = new();
             foreach (var marking in appearance.Markings)

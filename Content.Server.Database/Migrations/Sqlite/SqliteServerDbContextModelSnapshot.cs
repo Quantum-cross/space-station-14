@@ -448,12 +448,19 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("TEXT")
                         .HasColumnName("antag_name");
 
+                    b.Property<int>("HumanoidProfileId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("humanoid_profile_id");
+
                     b.Property<int>("ProfileId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("profile_id");
 
                     b.HasKey("Id")
                         .HasName("PK_antag");
+
+                    b.HasIndex("HumanoidProfileId")
+                        .HasDatabaseName("IX_antag_humanoid_profile_id");
 
                     b.HasIndex("ProfileId", "AntagName")
                         .IsUnique();
@@ -678,6 +685,9 @@ namespace Content.Server.Database.Migrations.Sqlite
 
                     b.HasIndex("PreferenceId");
 
+                    b.HasIndex("PreferenceId", "JobName")
+                        .IsUnique();
+
                     b.HasIndex(new[] { "PreferenceId" }, "IX_job_one_high_priority")
                         .IsUnique()
                         .HasFilter("priority = 3");
@@ -793,10 +803,6 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("profile_id");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("age");
-
                     b.Property<string>("CharacterName")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -806,71 +812,19 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("enabled");
 
-                    b.Property<string>("EyeColor")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("eye_color");
-
-                    b.Property<string>("FacialHairColor")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("facial_hair_color");
-
-                    b.Property<string>("FacialHairName")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("facial_hair_name");
-
-                    b.Property<string>("FlavorText")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("flavor_text");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("gender");
-
-                    b.Property<string>("HairColor")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("hair_color");
-
-                    b.Property<string>("HairName")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("hair_name");
-
-                    b.Property<byte[]>("Markings")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("markings");
-
                     b.Property<int>("PreferenceId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("preference_id");
-
-                    b.Property<string>("Sex")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("sex");
-
-                    b.Property<string>("SkinColor")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("skin_color");
 
                     b.Property<int>("Slot")
                         .HasColumnType("INTEGER")
                         .HasColumnName("slot");
 
-                    b.Property<int>("SpawnPriority")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("spawn_priority");
-
-                    b.Property<string>("Species")
+                    b.Property<string>("profile_type")
                         .IsRequired()
+                        .HasMaxLength(21)
                         .HasColumnType("TEXT")
-                        .HasColumnName("species");
+                        .HasColumnName("profile_type");
 
                     b.HasKey("Id")
                         .HasName("PK_profile");
@@ -882,6 +836,10 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("profile", (string)null);
+
+                    b.HasDiscriminator<string>("profile_type").HasValue("profile_base");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Content.Server.Database.ProfileLoadout", b =>
@@ -927,7 +885,8 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.HasKey("Id")
                         .HasName("PK_profile_loadout_group");
 
-                    b.HasIndex("ProfileRoleLoadoutId");
+                    b.HasIndex("ProfileRoleLoadoutId")
+                        .HasDatabaseName("IX_profile_loadout_group_profile_role_loadout_id");
 
                     b.ToTable("profile_loadout_group", (string)null);
                 });
@@ -1298,6 +1257,10 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("trait_id");
 
+                    b.Property<int>("HumanoidProfileId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("humanoid_profile_id");
+
                     b.Property<int>("ProfileId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("profile_id");
@@ -1309,6 +1272,9 @@ namespace Content.Server.Database.Migrations.Sqlite
 
                     b.HasKey("Id")
                         .HasName("PK_trait");
+
+                    b.HasIndex("HumanoidProfileId")
+                        .HasDatabaseName("IX_trait_humanoid_profile_id");
 
                     b.HasIndex("ProfileId", "TraitName")
                         .IsUnique();
@@ -1377,6 +1343,92 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasDatabaseName("IX_player_round_rounds_id");
 
                     b.ToTable("player_round", (string)null);
+                });
+
+            modelBuilder.Entity("Content.Server.Database.BorgProfile", b =>
+                {
+                    b.HasBaseType("Content.Server.Database.Profile");
+
+                    b.Property<int>("SpawnPriority")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("borg_profile_spawn_priority");
+
+                    b.ToTable("profile", t =>
+                        {
+                            t.Property("SpawnPriority")
+                                .HasColumnName("BorgProfile_spawn_priority");
+                        });
+
+                    b.HasDiscriminator().HasValue("BorgProfile");
+                });
+
+            modelBuilder.Entity("Content.Server.Database.HumanoidProfile", b =>
+                {
+                    b.HasBaseType("Content.Server.Database.Profile");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("age");
+
+                    b.Property<string>("EyeColor")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("eye_color");
+
+                    b.Property<string>("FacialHairColor")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("facial_hair_color");
+
+                    b.Property<string>("FacialHairName")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("facial_hair_name");
+
+                    b.Property<string>("FlavorText")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("flavor_text");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("gender");
+
+                    b.Property<string>("HairColor")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("hair_color");
+
+                    b.Property<string>("HairName")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("hair_name");
+
+                    b.Property<byte[]>("Markings")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("markings");
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("sex");
+
+                    b.Property<string>("SkinColor")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("skin_color");
+
+                    b.Property<int>("SpawnPriority")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("spawn_priority");
+
+                    b.Property<string>("Species")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("species");
+
+                    b.HasDiscriminator().HasValue("profile_humanoid");
                 });
 
             modelBuilder.Entity("Content.Server.Database.Admin", b =>
@@ -1588,14 +1640,14 @@ namespace Content.Server.Database.Migrations.Sqlite
 
             modelBuilder.Entity("Content.Server.Database.Antag", b =>
                 {
-                    b.HasOne("Content.Server.Database.Profile", "Profile")
+                    b.HasOne("Content.Server.Database.HumanoidProfile", "HumanoidProfile")
                         .WithMany("Antags")
-                        .HasForeignKey("ProfileId")
+                        .HasForeignKey("HumanoidProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_antag_profile_profile_id");
+                        .HasConstraintName("FK_antag_profile_humanoid_profile_id");
 
-                    b.Navigation("Profile");
+                    b.Navigation("HumanoidProfile");
                 });
 
             modelBuilder.Entity("Content.Server.Database.ConnectionLog", b =>
@@ -1640,14 +1692,14 @@ namespace Content.Server.Database.Migrations.Sqlite
 
             modelBuilder.Entity("Content.Server.Database.Job", b =>
                 {
-                    b.HasOne("Content.Server.Database.Profile", "Profile")
+                    b.HasOne("Content.Server.Database.HumanoidProfile", "HumanoidProfile")
                         .WithMany("Jobs")
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_job_profile_profile_id");
+                        .HasConstraintName("FK_job_profile_humanoid_profile_id");
 
-                    b.Navigation("Profile");
+                    b.Navigation("HumanoidProfile");
                 });
 
             modelBuilder.Entity("Content.Server.Database.JobPreference", b =>
@@ -1731,14 +1783,14 @@ namespace Content.Server.Database.Migrations.Sqlite
 
             modelBuilder.Entity("Content.Server.Database.ProfileRoleLoadout", b =>
                 {
-                    b.HasOne("Content.Server.Database.Profile", "Profile")
+                    b.HasOne("Content.Server.Database.HumanoidProfile", "HumanoidProfile")
                         .WithMany("Loadouts")
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_profile_role_loadout_profile_profile_id");
+                        .HasConstraintName("FK_profile_role_loadout_profile_humanoid_profile_id");
 
-                    b.Navigation("Profile");
+                    b.Navigation("HumanoidProfile");
                 });
 
             modelBuilder.Entity("Content.Server.Database.RoleWhitelist", b =>
@@ -1925,14 +1977,14 @@ namespace Content.Server.Database.Migrations.Sqlite
 
             modelBuilder.Entity("Content.Server.Database.Trait", b =>
                 {
-                    b.HasOne("Content.Server.Database.Profile", "Profile")
+                    b.HasOne("Content.Server.Database.HumanoidProfile", "HumanoidProfile")
                         .WithMany("Traits")
-                        .HasForeignKey("ProfileId")
+                        .HasForeignKey("HumanoidProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_trait_profile_profile_id");
+                        .HasConstraintName("FK_trait_profile_humanoid_profile_id");
 
-                    b.Navigation("Profile");
+                    b.Navigation("HumanoidProfile");
                 });
 
             modelBuilder.Entity("PlayerRound", b =>
@@ -2020,17 +2072,6 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.Navigation("Profiles");
                 });
 
-            modelBuilder.Entity("Content.Server.Database.Profile", b =>
-                {
-                    b.Navigation("Antags");
-
-                    b.Navigation("Jobs");
-
-                    b.Navigation("Loadouts");
-
-                    b.Navigation("Traits");
-                });
-
             modelBuilder.Entity("Content.Server.Database.ProfileLoadoutGroup", b =>
                 {
                     b.Navigation("Loadouts");
@@ -2063,6 +2104,17 @@ namespace Content.Server.Database.Migrations.Sqlite
             modelBuilder.Entity("Content.Server.Database.ServerRoleBan", b =>
                 {
                     b.Navigation("Unban");
+                });
+
+            modelBuilder.Entity("Content.Server.Database.HumanoidProfile", b =>
+                {
+                    b.Navigation("Antags");
+
+                    b.Navigation("Jobs");
+
+                    b.Navigation("Loadouts");
+
+                    b.Navigation("Traits");
                 });
 #pragma warning restore 612, 618
         }

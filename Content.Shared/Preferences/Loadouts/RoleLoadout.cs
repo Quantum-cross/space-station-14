@@ -79,9 +79,9 @@ public sealed partial class RoleLoadout : IEquatable<RoleLoadout>
         {
             var name = EntityName.Trim();
 
-            if (name.Length > HumanoidCharacterProfile.MaxNameLength)
+            if (name.Length > ICharacterProfile.MaxNameLength)
             {
-                EntityName = name[..HumanoidCharacterProfile.MaxNameLength];
+                EntityName = name[.. ICharacterProfile.MaxNameLength];
             }
 
             if (name.Length == 0)

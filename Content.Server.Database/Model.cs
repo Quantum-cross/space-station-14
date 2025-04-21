@@ -20,7 +20,9 @@ namespace Content.Server.Database
         }
 
         public DbSet<Preference> Preference { get; set; } = null!;
-        public DbSet<Profile> Profile { get; set; } = null!;
+        public DbSet<BaseProfile> Profile { get; set; } = null!;
+        public DbSet<HumanoidProfile> HumanoidProfile { get; set; } = null!;
+        public DbSet<BorgProfile> BorgProfile { get; set; } = null!;
         public DbSet<AssignedUserId> AssignedUserId { get; set; } = null!;
         public DbSet<Player> Player { get; set; } = default!;
         public DbSet<Admin> Admin { get; set; } = null!;
@@ -53,9 +55,20 @@ namespace Content.Server.Database
                 .HasIndex(p => p.UserId)
                 .IsUnique();
 
-            modelBuilder.Entity<Profile>()
+            modelBuilder.Entity<BaseProfile>()
+                .HasDiscriminator<string>("profile_type")
+                .HasValue<BaseProfile>("profile_base")
+                .HasValue<HumanoidProfile>("profile_humanoid")
+                .HasValue<BorgProfile>("profile_borg");
+
+            modelBuilder.Entity<BaseProfile>()
                 .HasIndex(p => new {p.Slot, PrefsId = p.PreferenceId})
                 .IsUnique();
+
+            modelBuilder.Entity<Preference>()
+                .HasMany(p => p.Profiles)
+                .WithOne(p => p.Preference)
+                .HasForeignKey(p => p.PreferenceId);
 
             modelBuilder.Entity<Antag>()
                 .HasIndex(p => new {HumanoidProfileId = p.ProfileId, p.AntagName})
@@ -66,7 +79,7 @@ namespace Content.Server.Database
                 .IsUnique();
 
             modelBuilder.Entity<ProfileRoleLoadout>()
-                .HasOne(e => e.Profile)
+                .HasOne(e => e.HumanoidProfile)
                 .WithMany(e => e.Loadouts)
                 .HasForeignKey(e => e.ProfileId)
                 .IsRequired();
@@ -87,9 +100,18 @@ namespace Content.Server.Database
                 .HasIndex(j => j.PreferenceId);
 
             modelBuilder.Entity<JobPreference>()
+                .HasIndex(j => new { j.PreferenceId, j.JobName })
+                .IsUnique();
+
+            modelBuilder.Entity<JobPreference>()
                 .HasIndex(j => j.PreferenceId, "IX_job_one_high_priority")
                 .IsUnique()
                 .HasFilter("priority = 3");
+
+            modelBuilder.Entity<HumanoidProfile>()
+                .HasMany(p => p.Jobs)
+                .WithOne(j => j.HumanoidProfile)
+                .HasForeignKey(j => j.ProfileId);
 
             modelBuilder.Entity<Job>()
                 .HasIndex(j => j.ProfileId);
@@ -394,15 +416,31 @@ namespace Content.Server.Database
         public int Id { get; set; }
         public Guid UserId { get; set; }
         public string AdminOOCColor { get; set; } = null!;
-        public List<Profile> Profiles { get; } = new();
+        public List<BaseProfile> Profiles { get; } = new();
         public List<JobPreference> JobPreferences { get; set; } = new();
     }
 
-    public class Profile
+    public abstract class BaseProfile
     {
         public int Id { get; set; }
         public int Slot { get; set; }
         [Column("char_name")] public string CharacterName { get; set; } = null!;
+        public bool Enabled { get; set; }
+        public int PreferenceId { get; set; }
+        public Preference Preference { get; set; } = null!;
+    }
+
+    public class HumanoidProfile : BaseProfile
+    {
+        public HumanoidProfile(){}
+
+        public HumanoidProfile(BaseProfile other)
+        {
+            Slot = other.Slot;
+            CharacterName = other.CharacterName;
+            Enabled = other.Enabled;
+        }
+
         public string FlavorText { get; set; } = null!;
         public int Age { get; set; }
         public string Sex { get; set; } = null!;
@@ -421,17 +459,17 @@ namespace Content.Server.Database
         public List<Trait> Traits { get; } = new();
 
         public List<ProfileRoleLoadout> Loadouts { get; } = new();
+    }
 
-        public bool Enabled { get; set; }
-
-        public int PreferenceId { get; set; }
-        public Preference Preference { get; set; } = null!;
+    public class BorgProfile : BaseProfile
+    {
+        public int SpawnPriority { get; set; } = 0;
     }
 
     public class Job
     {
         public int Id { get; set; }
-        public Profile Profile { get; set; } = null!;
+        public HumanoidProfile HumanoidProfile { get; set; } = null!;
         public int ProfileId { get; set; }
 
         public string JobName { get; set; } = null!;
@@ -459,7 +497,7 @@ namespace Content.Server.Database
     public class Antag
     {
         public int Id { get; set; }
-        public Profile Profile { get; set; } = null!;
+        public HumanoidProfile HumanoidProfile { get; set; } = null!;
         public int ProfileId { get; set; }
 
         public string AntagName { get; set; } = null!;
@@ -468,7 +506,7 @@ namespace Content.Server.Database
     public class Trait
     {
         public int Id { get; set; }
-        public Profile Profile { get; set; } = null!;
+        public HumanoidProfile HumanoidProfile { get; set; } = null!;
         public int ProfileId { get; set; }
 
         public string TraitName { get; set; } = null!;
@@ -485,7 +523,7 @@ namespace Content.Server.Database
 
         public int ProfileId { get; set; }
 
-        public Profile Profile { get; set; } = null!;
+        public HumanoidProfile HumanoidProfile { get; set; } = null!;
 
         /// <summary>
         /// The corresponding role prototype on the profile.
