@@ -17,15 +17,13 @@ public sealed class AnimateOnSpawnSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<AnimateOnSpawnComponent, MapInitEvent>(HandleInitEvent);
+        SubscribeLocalEvent<AnimateOnSpawnComponent, ComponentInit>(HandleInitEvent);
 
         _sawmill = _log.GetSawmill("AnimateOnSpawnSystem");
     }
 
-    private void HandleInitEvent(Entity<AnimateOnSpawnComponent> ent, ref MapInitEvent args)
+    private void HandleInitEvent(Entity<AnimateOnSpawnComponent> ent, ref ComponentInit args)
     {
-        if (!TryComp<SpriteComponent>(ent, out var sprite))
-            return;
 
         _appearanceSystem.SetData(ent, AnimateOnSpawnVisualState.State, true);
         ent.Comp.EndTime = Timing.CurTime + ent.Comp.Delay;

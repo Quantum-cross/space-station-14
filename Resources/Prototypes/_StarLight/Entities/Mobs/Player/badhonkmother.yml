@@ -11,6 +11,11 @@
           shader: unshaded
           sprite: _Starlight/Mobs/Demons/badhonkmother.rsi
           map: ["normalLayer"]
+        - state: transform
+          shader: unshaded
+          sprite: _Starlight/Mobs/Demons/honkmotherv2.rsi
+          map: ["animatedLayer"]
+          visible: false
 
 - type: entity
   parent: [MobBadHonkmotherBase, BaseMob, MobPolymorphable]
@@ -90,15 +95,30 @@
   suffix: transform
   id: BadHonkmotherTransform
   components: 
+  - type: Sprite
+    drawdepth: Ghosts
+    layers:
+      - state: badhonkmother
+        shader: unshaded
+        sprite: _Starlight/Mobs/Demons/badhonkmother.rsi
+        map: [ "normalLayer" ]
+        visible: false
+      - state: transform
+        shader: unshaded
+        sprite: _Starlight/Mobs/Demons/honkmotherv2.rsi
+        map: [ "animatedLayer" ]
   - type: GenericVisualizer
     visuals:
       enum.AnimateOnSpawnVisualState.State:
         normalLayer:
           True: 
-            sprite: _Starlight/Mobs/Demons/honkmotherv2.rsi
-            state: transform
+            visible: false
           False: 
-            sprite: _Starlight/Mobs/Demons/badhonkmother.rsi
-            state: badhonkmother
+            visible: true
+        animatedLayer:
+          True:
+            visible: true
+          False:
+            visible: false
   - type: AnimateOnSpawn
     delay: 2.6
