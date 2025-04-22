@@ -1,0 +1,56 @@
+﻿{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "sprite and animation by ReddituserID",
+  "size": {
+    "x": 276,
+    "y": 271
+  },
+  "metaAtlas": false,
+  "states": [
+    {
+      "name": "honkmotherv2",
+      "delays": [
+        [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "transform",
+      "delays": [
+        [
+          0.3,
+          1,
+          0.2,
+          0.2,
+          0.2,
+          0.2,
+          0.2,
+          0.3
+        ]
+      ]
+    }
+  ]
+}

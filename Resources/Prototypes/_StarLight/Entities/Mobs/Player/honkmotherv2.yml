@@ -1,0 +1,114 @@
+﻿- type: entity
+  abstract: true
+  id: MobHonkmotherBase
+  name: honkmother
+  description: Insert funny pun here
+  components:
+    - type: Sprite
+      sprite: _Starlight/Mobs/Demons/honkmotherv2.rsi
+      drawdepth: Ghosts
+      layers:
+        - state: honkmotherv2
+          shader: unshaded
+
+
+- type: entity
+  parent: [MobHonkmotherBase, BaseMob]
+  id: honkmother
+  components:
+    - type: CargoSellBlacklist
+    - type: ContentEye
+      maxZoom: 2.0,2.0
+    - type: Fixtures
+      fixtures:
+        EventHorizonCollider:
+          shape:
+            !type:PhysShapeCircle
+            radius: 5
+          hard: false
+          restitution: 0.8
+          density: 1
+          mask:
+            - SingularityLayer
+          layer:
+            - SingularityLayer
+        EventHorizonConsumer:
+          shape:
+            !type:PhysShapeCircle
+            radius: 5
+          hard: false
+          mask:
+            - SingularityLayer
+          layer:
+            - SingularityLayer
+    - type: Actions
+    - type: Input
+      context: "ghost"
+    - type: MovementIgnoreGravity
+    - type: IntrinsicRadioReceiver
+    - type: ActiveRadio
+      channels:
+        - Binary
+        - Common
+        - Command
+        - CentCom
+        - Engineering
+        - Medical
+        - Science
+        - Security
+        - Service
+        - Supply
+        - Syndicate
+      globalReceive: true
+    - type: Physics
+      bodyType: Dynamic
+      bodyStatus: InAir
+    - type: CanMoveInAir
+    - type: HTN
+      rootTask:
+        task: SimpleRangedHostileCompound
+    - type: HitscanBatteryAmmoProvider
+      proto: RedLaser
+      fireCost: 62.5
+    - type: Battery
+      maxCharge: 1000
+      startingCharge: 1000
+    - type: BatterySelfRecharger
+      autoRecharge: true
+      autoRechargeRate: 40
+    - type: Gun
+      fireRate: 0.75
+      useKey: false
+      selectedMode: SemiAuto
+      availableModes:
+        - SemiAuto
+      soundGunshot: /Audio/Weapons/Guns/Gunshots/laser_clown.ogg
+    - type: Speech
+    - type: CombatMode
+    - type: Polymorphable
+      innatePolymorphs:
+        - BadHonkmotherMorph
+
+#- type: entity
+#  id: ActionPolymorphBadHonkMother
+#  name: Transform
+#  description: Change into your true form
+#  components:
+#    - type: InstantAction
+#      useDelay: 60
+#      event: !type:PolymorphActionEvent
+#        protoId: BadHonkmother
+#      itemIconStyle: NoItem
+#      icon:
+#        sprite: Mobs/Demons/badhonkmother.rsi
+#        state: tra
+
+- type: polymorph
+  id: BadHonkmotherMorph
+  configuration:
+    entity: BadHonkmotherTransform
+    transferName: true
+    revertOnCrit: false
+    revertOnDeath: false
+    allowRepeatedMorphs: true
+
