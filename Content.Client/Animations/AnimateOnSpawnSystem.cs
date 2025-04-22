@@ -17,18 +17,12 @@ public sealed class AnimateOnSpawnSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<AnimateOnSpawnComponent, AnimationCompletedEvent>(HandleAnimationCompleteEvent);
-        SubscribeLocalEvent<AnimateOnSpawnComponent, ComponentInit>(HandleInitEvent);
+        SubscribeLocalEvent<AnimateOnSpawnComponent, MapInitEvent>(HandleInitEvent);
 
         _sawmill = _log.GetSawmill("AnimateOnSpawnSystem");
     }
 
-    private void HandleAnimationCompleteEvent(Entity<AnimateOnSpawnComponent> ent, ref AnimationCompletedEvent args)
-    {
-        _sawmill.Warning("Animation complete!");
-    }
-
-    private void HandleInitEvent(Entity<AnimateOnSpawnComponent> ent, ref ComponentInit args)
+    private void HandleInitEvent(Entity<AnimateOnSpawnComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<SpriteComponent>(ent, out var sprite))
             return;
