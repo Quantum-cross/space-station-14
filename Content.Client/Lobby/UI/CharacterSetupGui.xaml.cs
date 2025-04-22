@@ -27,6 +27,7 @@ namespace Content.Client.Lobby.UI
         [Dependency] private readonly IConfigurationManager _cfg = default!;
 
         private readonly Button _createNewCharacterButton;
+        private readonly Button _createNewBorgButton;
         private readonly HumanoidProfileEditor _humanoidProfileEditor;
         public int? SelectedCharacterSlot;
 
@@ -62,6 +63,18 @@ namespace Content.Client.Lobby.UI
                 args.Event.Handle();
             };
 
+            _createNewBorgButton = new Button
+            {
+                Text = Loc.GetString("character-setup-gui-create-new-character-borg-button"),
+            };
+
+            _createNewBorgButton.OnPressed += args =>
+            {
+                _preferencesManager.CreateCharacter(BorgCharacterProfile.Random());
+                ReloadCharacterPickers();
+                args.Event.Handle();
+            };
+
             CharEditor.AddChild(profileEditor);
             JobPriorityEditor.AddChild(jobPriorityEditor);
             RulesButton.OnPressed += _ => new RulesAndInfoWindow().Open();
@@ -84,6 +97,7 @@ namespace Content.Client.Lobby.UI
         public void ReloadCharacterPickers()
         {
             _createNewCharacterButton.Orphan();
+            _createNewBorgButton.Orphan();
             Characters.DisposeAllChildren();
 
             var numberOfFullSlots = 0;
@@ -144,8 +158,9 @@ namespace Content.Client.Lobby.UI
                     first = false;
             }
 
-            _createNewCharacterButton.Disabled = numberOfFullSlots >= _preferencesManager.Settings.MaxCharacterSlots;
+            _createNewBorgButton.Disabled = _createNewCharacterButton.Disabled = numberOfFullSlots >= _preferencesManager.Settings.MaxCharacterSlots;
             Characters.AddChild(_createNewCharacterButton);
+            Characters.AddChild(_createNewBorgButton);
         }
     }
 }

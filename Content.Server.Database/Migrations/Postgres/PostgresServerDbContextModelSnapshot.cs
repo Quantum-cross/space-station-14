@@ -570,6 +570,54 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.ToTable("ban_template", (string)null);
                 });
 
+            modelBuilder.Entity("Content.Server.Database.BaseProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("profile_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CharacterName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("char_name");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("enabled");
+
+                    b.Property<int>("PreferenceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("preference_id");
+
+                    b.Property<int>("Slot")
+                        .HasColumnType("integer")
+                        .HasColumnName("slot");
+
+                    b.Property<string>("profile_type")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)")
+                        .HasColumnName("profile_type");
+
+                    b.HasKey("Id")
+                        .HasName("PK_profile");
+
+                    b.HasIndex("PreferenceId")
+                        .HasDatabaseName("IX_profile_preference_id");
+
+                    b.HasIndex("Slot", "PreferenceId")
+                        .IsUnique();
+
+                    b.ToTable("profile", (string)null);
+
+                    b.HasDiscriminator<string>("profile_type").HasValue("profile_base");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("Content.Server.Database.Blacklist", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -842,54 +890,6 @@ namespace Content.Server.Database.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("preference", (string)null);
-                });
-
-            modelBuilder.Entity("Content.Server.Database.Profile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("profile_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CharacterName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("char_name");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("enabled");
-
-                    b.Property<int>("PreferenceId")
-                        .HasColumnType("integer")
-                        .HasColumnName("preference_id");
-
-                    b.Property<int>("Slot")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot");
-
-                    b.Property<string>("profile_type")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)")
-                        .HasColumnName("profile_type");
-
-                    b.HasKey("Id")
-                        .HasName("PK_profile");
-
-                    b.HasIndex("PreferenceId")
-                        .HasDatabaseName("IX_profile_preference_id");
-
-                    b.HasIndex("Slot", "PreferenceId")
-                        .IsUnique();
-
-                    b.ToTable("profile", (string)null);
-
-                    b.HasDiscriminator<string>("profile_type").HasValue("profile_base");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Content.Server.Database.ProfileLoadout", b =>
@@ -1425,24 +1425,18 @@ namespace Content.Server.Database.Migrations.Postgres
 
             modelBuilder.Entity("Content.Server.Database.BorgProfile", b =>
                 {
-                    b.HasBaseType("Content.Server.Database.Profile");
+                    b.HasBaseType("Content.Server.Database.BaseProfile");
 
                     b.Property<int>("SpawnPriority")
                         .HasColumnType("integer")
-                        .HasColumnName("borg_profile_spawn_priority");
+                        .HasColumnName("spawn_priority");
 
-                    b.ToTable("profile", t =>
-                        {
-                            t.Property("SpawnPriority")
-                                .HasColumnName("BorgProfile_spawn_priority");
-                        });
-
-                    b.HasDiscriminator().HasValue("BorgProfile");
+                    b.HasDiscriminator().HasValue("profile_borg");
                 });
 
             modelBuilder.Entity("Content.Server.Database.HumanoidProfile", b =>
                 {
-                    b.HasBaseType("Content.Server.Database.Profile");
+                    b.HasBaseType("Content.Server.Database.BaseProfile");
 
                     b.Property<int>("Age")
                         .HasColumnType("integer")
@@ -1499,12 +1493,18 @@ namespace Content.Server.Database.Migrations.Postgres
 
                     b.Property<int>("SpawnPriority")
                         .HasColumnType("integer")
-                        .HasColumnName("spawn_priority");
+                        .HasColumnName("humanoid_profile_spawn_priority");
 
                     b.Property<string>("Species")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("species");
+
+                    b.ToTable("profile", t =>
+                        {
+                            t.Property("SpawnPriority")
+                                .HasColumnName("HumanoidProfile_spawn_priority");
+                        });
 
                     b.HasDiscriminator().HasValue("profile_humanoid");
                 });
@@ -1728,6 +1728,18 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.Navigation("HumanoidProfile");
                 });
 
+            modelBuilder.Entity("Content.Server.Database.BaseProfile", b =>
+                {
+                    b.HasOne("Content.Server.Database.Preference", "Preference")
+                        .WithMany("Profiles")
+                        .HasForeignKey("PreferenceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_profile_preference_preference_id");
+
+                    b.Navigation("Preference");
+                });
+
             modelBuilder.Entity("Content.Server.Database.ConnectionLog", b =>
                 {
                     b.HasOne("Content.Server.Database.Server", "Server")
@@ -1821,18 +1833,6 @@ namespace Content.Server.Database.Migrations.Postgres
                         });
 
                     b.Navigation("LastSeenHWId");
-                });
-
-            modelBuilder.Entity("Content.Server.Database.Profile", b =>
-                {
-                    b.HasOne("Content.Server.Database.Preference", "Preference")
-                        .WithMany("Profiles")
-                        .HasForeignKey("PreferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_profile_preference_preference_id");
-
-                    b.Navigation("Preference");
                 });
 
             modelBuilder.Entity("Content.Server.Database.ProfileLoadout", b =>

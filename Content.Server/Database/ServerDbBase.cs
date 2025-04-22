@@ -77,25 +77,29 @@ namespace Content.Server.Database
                 return;
             }
 
-            if (profile is not HumanoidCharacterProfile humanoid)
+            var blah = db.DbContext.Profile.SingleOrDefault(p => p.Slot == slot);
+            BaseProfile? oldProfile = blah switch
             {
-                // TODO: Handle other ICharacterProfile implementations properly
-                throw new NotImplementedException();
-            }
+                HumanoidProfile isHumanoid =>
+                    db.DbContext.HumanoidProfile
+                        .Include(p => p.Preference)
+                        .Where(p => p.Preference.UserId == userId.UserId)
+                        .Include(p => p.Jobs)
+                        .Include(p => p.Antags)
+                        .Include(p => p.Traits)
+                        .Include(p => p.Loadouts)
+                        .ThenInclude(l => l.Groups)
+                        .ThenInclude(group => group.Loadouts)
+                        .AsSplitQuery()
+                        .SingleOrDefault(h => h.Slot == slot),
+                BorgProfile isBorg =>
+                    db.DbContext.BorgProfile
+                        .SingleOrDefault(b => b.Slot == slot),
+                null => null,
+                _ => throw new NotImplementedException(),
+            };
 
-            var oldProfile = db.DbContext.HumanoidProfile
-                .Include(p => p.Preference)
-                .Where(p => p.Preference.UserId == userId.UserId)
-                .Include(p => p.Jobs)
-                .Include(p => p.Antags)
-                .Include(p => p.Traits)
-                .Include(p => p.Loadouts)
-                    .ThenInclude(l => l.Groups)
-                    .ThenInclude(group => group.Loadouts)
-                .AsSplitQuery()
-                .SingleOrDefault(h => h.Slot == slot);
-
-            var newProfile = ConvertProfiles(humanoid, slot, oldProfile);
+            var newProfile = ConvertProfiles(profile, slot, oldProfile);
             if (oldProfile == null)
             {
                 var prefs = await db.DbContext
@@ -189,6 +193,16 @@ namespace Content.Server.Database
             prefs.AdminOOCColor = color.ToHex();
 
             await db.DbContext.SaveChangesAsync();
+        }
+
+        private BaseProfile ConvertProfiles(ICharacterProfile profile, int slot, BaseProfile? oldProfile)
+        {
+            return profile switch
+            {
+                HumanoidCharacterProfile humanoid => ConvertProfiles(humanoid, slot, oldProfile),
+                BorgCharacterProfile borg => ConvertProfiles(borg, slot, oldProfile),
+                _ => throw new NotImplementedException($"Profile type {profile.GetType()} not implemented")
+            };
         }
 
         /// <summary>
@@ -295,9 +309,13 @@ namespace Content.Server.Database
             );
         }
 
-        private static BaseProfile ConvertProfiles(HumanoidCharacterProfile humanoid, int slot, HumanoidProfile? profile = null)
+        private static BaseProfile ConvertProfiles(HumanoidCharacterProfile humanoid, int slot, BaseProfile? profile = null)
         {
-            profile ??= new HumanoidProfile();
+            if(profile is not HumanoidProfile humanoidProfile)
+            {
+                humanoidProfile = new HumanoidProfile();
+                profile = humanoidProfile;
+            }
             var appearance = (HumanoidCharacterAppearance) humanoid.CharacterAppearance;
             List<string> markingStrings = new();
             foreach (var marking in appearance.Markings)
@@ -306,42 +324,42 @@ namespace Content.Server.Database
             }
             var markings = JsonSerializer.SerializeToDocument(markingStrings);
 
-            profile.CharacterName = humanoid.Name;
-            profile.FlavorText = humanoid.FlavorText;
-            profile.Species = humanoid.Species;
-            profile.Age = humanoid.Age;
-            profile.Sex = humanoid.Sex.ToString();
-            profile.Gender = humanoid.Gender.ToString();
-            profile.HairName = appearance.HairStyleId;
-            profile.HairColor = appearance.HairColor.ToHex();
-            profile.FacialHairName = appearance.FacialHairStyleId;
-            profile.FacialHairColor = appearance.FacialHairColor.ToHex();
-            profile.EyeColor = appearance.EyeColor.ToHex();
-            profile.SkinColor = appearance.SkinColor.ToHex();
-            profile.SpawnPriority = (int) humanoid.SpawnPriority;
-            profile.Markings = markings;
-            profile.Slot = slot;
-            profile.Enabled = humanoid.Enabled;
+            humanoidProfile.CharacterName = humanoid.Name;
+            humanoidProfile.FlavorText = humanoid.FlavorText;
+            humanoidProfile.Species = humanoid.Species;
+            humanoidProfile.Age = humanoid.Age;
+            humanoidProfile.Sex = humanoid.Sex.ToString();
+            humanoidProfile.Gender = humanoid.Gender.ToString();
+            humanoidProfile.HairName = appearance.HairStyleId;
+            humanoidProfile.HairColor = appearance.HairColor.ToHex();
+            humanoidProfile.FacialHairName = appearance.FacialHairStyleId;
+            humanoidProfile.FacialHairColor = appearance.FacialHairColor.ToHex();
+            humanoidProfile.EyeColor = appearance.EyeColor.ToHex();
+            humanoidProfile.SkinColor = appearance.SkinColor.ToHex();
+            humanoidProfile.SpawnPriority = (int) humanoid.SpawnPriority;
+            humanoidProfile.Markings = markings;
+            humanoidProfile.Slot = slot;
+            humanoidProfile.Enabled = humanoid.Enabled;
 
-            profile.Jobs.Clear();
-            profile.Jobs.AddRange(
+            humanoidProfile.Jobs.Clear();
+            humanoidProfile.Jobs.AddRange(
                 humanoid.JobPreferences
                     .Select(j => new Job {JobName = j})
             );
 
-            profile.Antags.Clear();
-            profile.Antags.AddRange(
+            humanoidProfile.Antags.Clear();
+            humanoidProfile.Antags.AddRange(
                 humanoid.AntagPreferences
                     .Select(a => new Antag {AntagName = a})
             );
 
-            profile.Traits.Clear();
-            profile.Traits.AddRange(
+            humanoidProfile.Traits.Clear();
+            humanoidProfile.Traits.AddRange(
                 humanoid.TraitPreferences
                         .Select(t => new Trait {TraitName = t})
             );
 
-            profile.Loadouts.Clear();
+            humanoidProfile.Loadouts.Clear();
 
             foreach (var (role, loadouts) in humanoid.Loadouts)
             {
@@ -369,9 +387,24 @@ namespace Content.Server.Database
                     dz.Groups.Add(profileGroup);
                 }
 
-                profile.Loadouts.Add(dz);
+                humanoidProfile.Loadouts.Add(dz);
             }
 
+            return profile;
+        }
+
+        private static BaseProfile ConvertProfiles(BorgCharacterProfile borg, int slot, BaseProfile? profile)
+        {
+            if(profile is not BorgProfile borgProfile)
+            {
+                borgProfile = new BorgProfile();
+                profile = borgProfile;
+            }
+            // var appearance = (BorgCharacterAppearance) borg.CharacterAppearance;
+            borgProfile.CharacterName = borg.Name;
+            borgProfile.SpawnPriority = (int) borg.SpawnPriority;
+            borgProfile.Slot = slot;
+            borgProfile.Enabled = borg.Enabled;
             return profile;
         }
         #endregion
