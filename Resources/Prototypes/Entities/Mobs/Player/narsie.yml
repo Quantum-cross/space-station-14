@@ -9,8 +9,24 @@
     drawdepth: Ghosts
     scale: 2.0,2.0
     layers:
+    - state: spawn
+      shader: unshaded
+      map: [ "animatedLayer" ]
     - state: narsie
       shader: unshaded
+      visible: false
+      map: [ "normalLayer" ]
+  - type: GenericVisualizer
+    visuals:
+      enum.AnimateOnSpawnVisualState.State:
+        animatedLayer:
+          True: { visible: true }
+          False: { visible: false }
+        normalLayer:
+          True: { visible: false }
+          False: { visible: true }
+  - type: AnimateOnSpawn
+    delay: 3.5
 
 # spawn animation, spawns actual narsie when it ends
 - type: entity
