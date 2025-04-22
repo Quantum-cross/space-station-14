@@ -28,11 +28,11 @@ public sealed partial class BorgCharacterProfile : ICharacterProfile
     [DataField]
     private bool _enabled;
 
-    private BorgCharacterProfile(BorgCharacterProfile other) : this(other.Name, other.SpawnPriority)
+    public BorgCharacterProfile(BorgCharacterProfile other) : this(other.Name, other.SpawnPriority)
     {
     }
 
-    private BorgCharacterProfile(string name, SpawnPriorityPreference spawnPriority)
+    public BorgCharacterProfile(string name, SpawnPriorityPreference spawnPriority)
     {
         Name = name;
         SpawnPriority = spawnPriority;
