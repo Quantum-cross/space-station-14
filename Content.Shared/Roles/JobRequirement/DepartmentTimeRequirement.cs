@@ -26,7 +26,7 @@ public sealed partial class DepartmentTimeRequirement : JobRequirement
 
     public override bool Check(IEntityManager entManager,
         IPrototypeManager protoManager,
-        HumanoidCharacterProfile? profile,
+        ICharacterProfile? profile,
         IReadOnlyDictionary<string, TimeSpan> playTimes,
         [NotNullWhen(false)] out FormattedMessage? reason)
     {

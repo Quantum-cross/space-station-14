@@ -1,0 +1,9 @@
+﻿<BoxContainer xmlns="https://spacestation14.io"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              Orientation="Vertical">
+    <Label Text="{Loc 'humanoid-profile-editor-skin-color-label'}" />
+    <Slider HorizontalExpand="True" Name="Skin" MinValue="0" MaxValue="100" Value="20" />
+    <BoxContainer Name="RgbSkinColorContainer" Visible="False" Orientation="Vertical" HorizontalExpand="True">
+        <ColorSelectorSliders Name="ColorPicker"/>
+    </BoxContainer>
+</BoxContainer>

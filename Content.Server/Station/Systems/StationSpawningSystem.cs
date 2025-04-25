@@ -67,7 +67,7 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
     /// <remarks>
     /// This only spawns the character, and does none of the mind-related setup you'd need for it to be playable.
     /// </remarks>
-    public EntityUid? SpawnPlayerCharacterOnStation(EntityUid? station, ProtoId<JobPrototype>? job, HumanoidCharacterProfile? profile, StationSpawningComponent? stationSpawning = null)
+    public EntityUid? SpawnPlayerCharacterOnStation(EntityUid? station, ProtoId<JobPrototype>? job, ICharacterProfile? profile, StationSpawningComponent? stationSpawning = null)
     {
         if (station != null && !Resolve(station.Value, ref stationSpawning))
             throw new ArgumentException("Tried to use a non-station entity as a station!", nameof(station));
@@ -96,7 +96,22 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
     public EntityUid SpawnPlayerMob(
         EntityCoordinates coordinates,
         ProtoId<JobPrototype>? job,
-        HumanoidCharacterProfile? profile,
+        ICharacterProfile? profile,
+        EntityUid? station,
+        EntityUid? entity = null)
+    {
+        return profile switch
+        {
+            HumanoidCharacterProfile humanoid => SpawnPlayerMob(coordinates, job, humanoid, station, entity),
+            BorgCharacterProfile borg => SpawnPlayerMob(coordinates, job, borg, station, entity),
+            _ => SpawnPlayerMob(coordinates, job, station, entity),
+        };
+    }
+
+    public EntityUid SpawnPlayerMob(
+        EntityCoordinates coordinates,
+        ProtoId<JobPrototype>? job,
+        HumanoidCharacterProfile profile,
         EntityUid? station,
         EntityUid? entity = null)
     {
@@ -108,7 +123,7 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
 
         if (_prototypeManager.TryIndex(jobLoadout, out RoleLoadoutPrototype? roleProto))
         {
-            profile?.Loadouts.TryGetValue(jobLoadout, out loadout);
+            profile.Loadouts.TryGetValue(jobLoadout, out loadout);
 
             // Set to default if not present
             if (loadout == null)
@@ -118,24 +133,6 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
             }
         }
 
-        // If we're not spawning a humanoid, we're gonna exit early without doing all the humanoid stuff.
-        if (prototype?.JobEntity != null)
-        {
-            DebugTools.Assert(entity is null);
-            var jobEntity = EntityManager.SpawnEntity(prototype.JobEntity, coordinates);
-            MakeSentientCommand.MakeSentient(jobEntity, EntityManager);
-
-            // Make sure custom names get handled, what is gameticker control flow whoopy.
-            if (loadout != null)
-            {
-                EquipRoleName(jobEntity, loadout, roleProto!);
-            }
-
-            DoJobSpecials(job, jobEntity);
-            _identity.QueueIdentityUpdate(jobEntity);
-            return jobEntity;
-        }
-
         string speciesId;
         if (_randomizeCharacters)
         {
@@ -143,13 +140,9 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
             var weights = _prototypeManager.Index<WeightedRandomSpeciesPrototype>(weightId);
             speciesId = weights.Pick(_random);
         }
-        else if (profile != null)
-        {
-            speciesId = profile.Species;
-        }
         else
         {
-            speciesId = SharedHumanoidAppearanceSystem.DefaultSpecies;
+            speciesId = profile.Species;
         }
 
         if (!_prototypeManager.TryIndex<SpeciesPrototype>(speciesId, out var species))
@@ -162,15 +155,12 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
             profile = HumanoidCharacterProfile.RandomWithSpecies(speciesId);
         }
 
-        if (profile != null)
-        {
-            _humanoidSystem.LoadProfile(entity.Value, profile);
-            _metaSystem.SetEntityName(entity.Value, profile.Name);
+        _humanoidSystem.LoadProfile(entity.Value, profile);
+        _metaSystem.SetEntityName(entity.Value, profile.Name);
 
-            if (profile.FlavorText != "" && _configurationManager.GetCVar(CCVars.FlavorText))
-            {
-                AddComp<DetailExaminableComponent>(entity.Value).Content = profile.FlavorText;
-            }
+        if (profile.FlavorText != "" && _configurationManager.GetCVar(CCVars.FlavorText))
+        {
+            AddComp<DetailExaminableComponent>(entity.Value).Content = profile.FlavorText;
         }
 
         if (loadout != null)
@@ -195,6 +185,61 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
         DoJobSpecials(job, entity.Value);
         _identity.QueueIdentityUpdate(entity.Value);
         return entity.Value;
+
+    }
+
+    public EntityUid SpawnPlayerMob(
+        EntityCoordinates coordinates,
+        ProtoId<JobPrototype>? job,
+        BorgCharacterProfile profile,
+        EntityUid? station,
+        EntityUid? entity = null)
+    {
+        _prototypeManager.TryIndex(job ?? string.Empty, out var prototype);
+
+        if (prototype?.JobEntity == null)
+        {
+            DebugTools.Assert(entity is null);
+            return EntityUid.Invalid;
+        }
+
+        var jobEntity = EntityManager.SpawnEntity(prototype.JobEntity, coordinates);
+        _metaSystem.SetEntityName(jobEntity, profile.Name);
+        MakeSentientCommand.MakeSentient(jobEntity, EntityManager);
+
+        DoJobSpecials(job, jobEntity);
+        _identity.QueueIdentityUpdate(jobEntity);
+        return jobEntity;
+    }
+
+    public EntityUid SpawnPlayerMob(
+        EntityCoordinates coordinates,
+        ProtoId<JobPrototype>? job,
+        EntityUid? station,
+        EntityUid? entity = null)
+    {
+        _prototypeManager.TryIndex(job ?? string.Empty, out var prototype);
+
+        // If we're not spawning a humanoid, we're gonna exit early without doing all the humanoid stuff.
+        if (prototype?.JobEntity != null)
+        {
+            DebugTools.Assert(entity is null);
+            var jobEntity = EntityManager.SpawnEntity(prototype.JobEntity, coordinates);
+            MakeSentientCommand.MakeSentient(jobEntity, EntityManager);
+
+            DoJobSpecials(job, jobEntity);
+            _identity.QueueIdentityUpdate(jobEntity);
+            return jobEntity;
+        }
+
+        var speciesId = SharedHumanoidAppearanceSystem.DefaultSpecies;
+        if (_randomizeCharacters)
+        {
+            var weightId = _configurationManager.GetCVar(CCVars.ICRandomSpeciesWeights);
+            var weights = _prototypeManager.Index<WeightedRandomSpeciesPrototype>(weightId);
+            speciesId = weights.Pick(_random);
+        }
+        return SpawnPlayerMob(coordinates, job, HumanoidCharacterProfile.RandomWithSpecies(speciesId), station, entity);
     }
 
     private void DoJobSpecials(ProtoId<JobPrototype>? job, EntityUid entity)
@@ -270,16 +315,16 @@ public sealed class PlayerSpawningEvent : EntityEventArgs
     /// <summary>
     /// The profile to use, if any.
     /// </summary>
-    public readonly HumanoidCharacterProfile? HumanoidCharacterProfile;
+    public readonly ICharacterProfile? Profile;
     /// <summary>
     /// The target station, if any.
     /// </summary>
     public readonly EntityUid? Station;
 
-    public PlayerSpawningEvent(ProtoId<JobPrototype>? job, HumanoidCharacterProfile? humanoidCharacterProfile, EntityUid? station)
+    public PlayerSpawningEvent(ProtoId<JobPrototype>? job, ICharacterProfile? profile, EntityUid? station)
     {
         Job = job;
-        HumanoidCharacterProfile = humanoidCharacterProfile;
+        Profile = profile;
         Station = station;
     }
 }

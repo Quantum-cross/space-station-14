@@ -67,7 +67,7 @@ public sealed class SpawnPointSystem : EntitySystem
         args.SpawnResult = _stationSpawning.SpawnPlayerMob(
             spawnLoc,
             args.Job,
-            args.HumanoidCharacterProfile,
+            args.Profile,
             args.Station);
     }
 }

@@ -157,7 +157,7 @@ namespace Content.Server.GameTicking
         }
 
         private void SpawnPlayer(ICommonSession player,
-            HumanoidCharacterProfile? character,
+            ICharacterProfile? character,
             EntityUid station,
             string? jobId = null,
             bool lateJoin = true,

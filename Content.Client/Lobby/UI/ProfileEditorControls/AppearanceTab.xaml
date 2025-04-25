@@ -1,0 +1,16 @@
+﻿<BoxContainer xmlns="https://spacestation14.io"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:profile="clr-namespace:Content.Client.Lobby.UI.ProfileEditorControls.Appearance"
+              Orientation="Vertical" VerticalExpand="True">
+    <BoxContainer Margin="10" Orientation="Vertical" HorizontalExpand="True">
+        <profile:SpeciesEditor Name="SpeciesEditor"/>
+        <profile:AgeEditor Name="AgeEditor"/>
+        <profile:SexEditor Name="SexEditor"/>
+        <profile:PronounsEditor Name="PronounsEditor"/>
+        <profile:ShowClothesEditor Name="ShowClothesEditor"/>
+        <profile:SpawnPriorityEditor Name="SpawnPriorityEditor"/>
+    </BoxContainer>
+    <profile:SkinEditor Name="SkinEditor" HorizontalExpand="True" Margin="10"/>
+    <profile:HairEditor Name="HairEditor" Margin="10"/>
+    <profile:EyeColorEditor Name="EyeColorEditor" Margin="10"/>
+</BoxContainer>

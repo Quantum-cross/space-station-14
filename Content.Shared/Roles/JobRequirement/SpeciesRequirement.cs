@@ -21,13 +21,13 @@ public sealed partial class SpeciesRequirement : JobRequirement
 
     public override bool Check(IEntityManager entManager,
         IPrototypeManager protoManager,
-        HumanoidCharacterProfile? profile,
+        ICharacterProfile? profile,
         IReadOnlyDictionary<string, TimeSpan> playTimes,
         [NotNullWhen(false)] out FormattedMessage? reason)
     {
         reason = new FormattedMessage();
 
-        if (profile is null) //the profile could be null if the player is a ghost. In this case we don't need to block the role selection for ghostrole
+        if (profile is not HumanoidCharacterProfile humanoid) //the profile could be null if the player is a ghost. In this case we don't need to block the role selection for ghostrole
             return true;
 
         var sb = new StringBuilder();
@@ -43,14 +43,14 @@ public sealed partial class SpeciesRequirement : JobRequirement
         {
             reason = FormattedMessage.FromMarkupPermissive($"{Loc.GetString("role-timer-whitelisted-species")}\n{sb}");
 
-            if (!Species.Contains(profile.Species))
+            if (!Species.Contains(humanoid.Species))
                 return false;
         }
         else
         {
             reason = FormattedMessage.FromMarkupPermissive($"{Loc.GetString("role-timer-blacklisted-species")}\n{sb}");
 
-            if (Species.Contains(profile.Species))
+            if (Species.Contains(humanoid.Species))
                 return false;
         }
 

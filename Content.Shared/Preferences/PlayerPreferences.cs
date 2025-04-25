@@ -84,16 +84,16 @@ namespace Content.Shared.Preferences
         /// </summary>
         /// <param name="job"></param>
         /// <returns></returns>
-        public HumanoidCharacterProfile? SelectProfileForJob(ProtoId<JobPrototype> job)
+        public ICharacterProfile? SelectProfileForJob(ProtoId<JobPrototype> job)
         {
-            List<HumanoidCharacterProfile> pool = [];
+            List<ICharacterProfile> pool = [];
             foreach (var profile in Characters.Values)
             {
-                if (profile is not HumanoidCharacterProfile { Enabled: true } humanoid)
+                if (profile is not { Enabled: true })
                     continue;
-                if (!humanoid.JobPreferences.Contains(job))
+                if (!profile.JobPreferences.Contains(job))
                     continue;
-                pool.Add(humanoid);
+                pool.Add(profile);
             }
 
             var random = IoCManager.Resolve<IRobustRandom>();
@@ -105,15 +105,15 @@ namespace Content.Shared.Preferences
         /// </summary>
         /// <param name="job"></param>
         /// <returns></returns>
-        public Dictionary<int, HumanoidCharacterProfile> GetAllProfilesForJob(ProtoId<JobPrototype> job)
+        public Dictionary<int, ICharacterProfile> GetAllProfilesForJob(ProtoId<JobPrototype> job)
         {
-            var result = new Dictionary<int, HumanoidCharacterProfile>();
+            var result = new Dictionary<int, ICharacterProfile>();
             foreach (var (slot, profile) in Characters)
             {
-                if (profile is not HumanoidCharacterProfile { Enabled: true } humanoid)
+                if (profile is not { Enabled: true })
                     continue;
-                if (humanoid.JobPreferences.Contains(job))
-                    result.Add(slot, humanoid);
+                if (profile.JobPreferences.Contains(job))
+                    result.Add(slot, profile);
             }
 
             return result;

@@ -1,0 +1,7 @@
+﻿<BoxContainer xmlns="https://spacestation14.io"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              HorizontalExpand="True">
+    <Label Text="{Loc 'humanoid-profile-editor-sex-label'}" />
+    <Control HorizontalExpand="True"/>
+    <OptionButton Name="SexButton" HorizontalAlignment="Right" />
+</BoxContainer>

@@ -306,9 +306,9 @@ public sealed partial class StationJobsSystem
             var allCharacterJobs = new HashSet<ProtoId<JobPrototype>>();
             foreach (var profile in playerPrefs.Characters.Values)
             {
-                if (profile is not HumanoidCharacterProfile { Enabled: true } humanoid)
+                if (profile is not { Enabled: true })
                     continue;
-                allCharacterJobs.UnionWith(humanoid.JobPreferences);
+                allCharacterJobs.UnionWith(profile.JobPreferences);
             }
             var filteredPlayerJobs = new HashSet<ProtoId<JobPrototype>>();
             foreach (var (job, priority) in playerJobs)

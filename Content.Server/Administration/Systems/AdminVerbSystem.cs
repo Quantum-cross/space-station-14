@@ -32,6 +32,7 @@ using System.Linq;
 using Content.Server.Silicons.Laws;
 using Content.Shared.Humanoid;
 using Content.Shared.Movement.Components;
+using Content.Shared.Preferences;
 using Content.Shared.Silicons.Laws.Components;
 using Robust.Server.Player;
 using Content.Shared.Silicons.StationAi;
@@ -146,7 +147,7 @@ namespace Content.Server.Administration.Systems
 
                             var stationUid = _stations.GetOwningStation(args.Target);
 
-                            var profile = _humanoidAppearance.GetBaseProfile(args.Target);
+                            ICharacterProfile? profile = _humanoidAppearance.GetBaseProfile(args.Target);
                             var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid);
 
                             if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp))
@@ -171,7 +172,7 @@ namespace Content.Server.Administration.Systems
                             }
 
                             var stationUid = _stations.GetOwningStation(args.Target);
-                            var profile = _humanoidAppearance.GetBaseProfile(args.Target);
+                            ICharacterProfile? profile = _humanoidAppearance.GetBaseProfile(args.Target);
                             _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid);
                         },
                         ConfirmationPopup = true,

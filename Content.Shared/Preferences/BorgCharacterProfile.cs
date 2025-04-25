@@ -19,28 +19,26 @@ namespace Content.Shared.Preferences;
 [Serializable, NetSerializable]
 public sealed partial class BorgCharacterProfile : ICharacterProfile
 {
-
-    private static readonly ProtoId<JobPrototype> ConstantJob = "Borg";
+    public static readonly ProtoId<JobPrototype> ConstantJob = "Borg";
 
     [DataField(readOnly: true)]
     private HashSet<ProtoId<JobPrototype>> _jobPreferences = [ConstantJob];
 
-    [DataField]
-    private bool _enabled;
-
-    public BorgCharacterProfile(BorgCharacterProfile other) : this(other.Name, other.SpawnPriority)
+    public BorgCharacterProfile(BorgCharacterProfile other) : this(other.Name, other.SpawnPriority, other.Enabled)
     {
     }
 
-    public BorgCharacterProfile(string name, SpawnPriorityPreference spawnPriority)
+    public BorgCharacterProfile(string name, SpawnPriorityPreference spawnPriority, bool enabled)
     {
         Name = name;
         SpawnPriority = spawnPriority;
         Appearance = new BorgCharacterAppearance();
         JobPreferences = _jobPreferences;
+        Enabled = enabled;
     }
 
-    public bool Enabled => _enabled;
+    [DataField]
+    public bool Enabled { get; set; }
 
     [DataField]
     public string Name { get; set; } = "Borgo";
@@ -60,7 +58,7 @@ public sealed partial class BorgCharacterProfile : ICharacterProfile
     /// When spawning into a round what's the preferred spot to spawn.
     /// </summary>
     [DataField]
-    public SpawnPriorityPreference SpawnPriority { get; private set; } = SpawnPriorityPreference.None;
+    public SpawnPriorityPreference SpawnPriority { get; set; } = SpawnPriorityPreference.None;
 
     public bool MemberwiseEquals(ICharacterProfile maybeOther)
     {
@@ -69,6 +67,8 @@ public sealed partial class BorgCharacterProfile : ICharacterProfile
         if (Name != other.Name)
             return false;
         if (Enabled != other.Enabled)
+            return false;
+        if (SpawnPriority != other.SpawnPriority)
             return false;
         return true;
     }
@@ -137,11 +137,44 @@ public sealed partial class BorgCharacterProfile : ICharacterProfile
 
     public ICharacterProfile AsEnabled(bool enabledValue = true)
     {
-        return new BorgCharacterProfile(){ _enabled = enabledValue };
+        return new BorgCharacterProfile(this) { Enabled = enabledValue };
+    }
+
+    public ICharacterProfile WithCharacterAppearance(ICharacterAppearance appearance)
+    {
+        return new BorgCharacterProfile(this);
+    }
+
+    ICharacterProfile ICharacterProfile.Clone()
+    {
+        return Clone();
+    }
+
+    public static string GetName()
+    {
+        var random = IoCManager.Resolve<IRobustRandom>();
+        var prototypeManager = IoCManager.Resolve<IPrototypeManager>();
+        ProtoId<LocalizedDatasetPrototype> borgNames = "NamesBorg";
+        return random.Pick(prototypeManager.Index(borgNames));
+    }
+
+    public string GetRandomName()
+    {
+        return GetName();
+    }
+
+    public BorgCharacterProfile Clone()
+    {
+        return new BorgCharacterProfile(this);
     }
 
     public static BorgCharacterProfile Random()
     {
         return new BorgCharacterProfile();
+    }
+
+    public BorgCharacterProfile WithSpawnPriorityPreference(SpawnPriorityPreference spawnPriority)
+    {
+        return new(this) { SpawnPriority = spawnPriority };
     }
 }

@@ -31,7 +31,10 @@ public sealed class ContainerSpawnPointSystem : EntitySystem
             return;
 
         // If it's just a spawn pref check if it's for cryo (silly).
-        if (args.HumanoidCharacterProfile?.SpawnPriority != SpawnPriorityPreference.Cryosleep &&
+        // TODO: this is gross, need common attributes
+        var spawnPrio = (args.Profile as HumanoidCharacterProfile)?.SpawnPriority;
+        spawnPrio ??= (args.Profile as BorgCharacterProfile)?.SpawnPriority;
+        if (spawnPrio != SpawnPriorityPreference.Cryosleep &&
             (!_proto.TryIndex(args.Job, out var jobProto) || jobProto.JobEntity == null))
         {
             return;
@@ -75,7 +78,7 @@ public sealed class ContainerSpawnPointSystem : EntitySystem
         args.SpawnResult = _stationSpawning.SpawnPlayerMob(
             baseCoords,
             args.Job,
-            args.HumanoidCharacterProfile,
+            args.Profile,
             args.Station);
 
         _random.Shuffle(possibleContainers);

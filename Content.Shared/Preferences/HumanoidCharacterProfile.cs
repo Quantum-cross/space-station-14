@@ -50,9 +50,7 @@ namespace Content.Shared.Preferences
         /// Is this character enabled? (Should it be considered for round start selection?)
         /// </summary>
         [DataField]
-        private bool _enabled;
-
-        public bool Enabled => _enabled;
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// <see cref="_loadouts"/>
@@ -101,7 +99,7 @@ namespace Content.Shared.Preferences
         /// When spawning into a round what's the preferred spot to spawn.
         /// </summary>
         [DataField]
-        public SpawnPriorityPreference SpawnPriority { get; private set; } = SpawnPriorityPreference.None;
+        public SpawnPriorityPreference SpawnPriority { get; set; } = SpawnPriorityPreference.None;
 
         /// <summary>
         /// <see cref="_antagPreferences"/>
@@ -140,7 +138,7 @@ namespace Content.Shared.Preferences
             _antagPreferences = antagPreferences;
             _traitPreferences = traitPreferences;
             _loadouts = loadouts;
-            _enabled = enabled;
+            Enabled = enabled;
         }
 
         /// <summary>Copy constructor</summary>
@@ -241,6 +239,11 @@ namespace Content.Shared.Preferences
             return new(this) { Name = name };
         }
 
+        public string GetRandomName()
+        {
+            return GetName(Species, Gender);
+        }
+
         public HumanoidCharacterProfile WithFlavorText(string flavorText)
         {
             return new(this) { FlavorText = flavorText };
@@ -266,10 +269,21 @@ namespace Content.Shared.Preferences
             return new(this) { Species = species };
         }
 
-
-        public HumanoidCharacterProfile WithCharacterAppearance(HumanoidCharacterAppearance appearance)
+        public ICharacterProfile AsEnabled(bool enabledValue = true)
         {
-            return new(this) { Appearance = appearance };
+            return new HumanoidCharacterProfile(this) { Enabled = enabledValue };
+        }
+
+        public ICharacterProfile WithCharacterAppearance(ICharacterAppearance appearance)
+        {
+            if (appearance is not HumanoidCharacterAppearance humanoidAppearance)
+                return new HumanoidCharacterProfile(this);
+            return new HumanoidCharacterProfile(this) { Appearance = humanoidAppearance };
+        }
+
+        ICharacterProfile ICharacterProfile.Clone()
+        {
+            return Clone();
         }
 
         public HumanoidCharacterProfile WithSpawnPriorityPreference(SpawnPriorityPreference spawnPriority)
@@ -335,8 +349,11 @@ namespace Content.Shared.Preferences
         }
 
         public HumanoidCharacterProfile WithTraitPreference(ProtoId<TraitPrototype> traitId,
-            IPrototypeManager protoManager)
+            IPrototypeManager protoManager, bool enable = true)
         {
+            if(!enable)
+                return WithoutTraitPreference(traitId, protoManager);
+
             // null category is assumed to be default.
             if (!protoManager.TryIndex(traitId, out var traitProto))
                 return new(this);
@@ -393,13 +410,6 @@ namespace Content.Shared.Preferences
             {
                 _traitPreferences = list,
             };
-        }
-
-        public ICharacterProfile AsEnabled(bool enabledValue = true)
-        {
-            var p = Clone();
-            p._enabled = enabledValue;
-            return p;
         }
 
         public string Summary =>

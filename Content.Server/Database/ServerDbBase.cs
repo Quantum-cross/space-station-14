@@ -44,9 +44,19 @@ namespace Content.Server.Database
         {
             await using var db = await GetDb(cancel);
 
+            // https://learn.microsoft.com/en-us/ef/core/querying/related-data/eager#include-on-derived-types
             var prefs = await db.DbContext
                 .Preference
                 .Include(p => p.Profiles)
+                    .ThenInclude(p => ((HumanoidProfile)p).Jobs)
+                .Include(p => p.Profiles)
+                    .ThenInclude(p => ((HumanoidProfile)p).Antags)
+                .Include(p => p.Profiles)
+                    .ThenInclude(p => ((HumanoidProfile)p).Traits)
+                .Include(p => p.Profiles)
+                    .ThenInclude(p => ((HumanoidProfile)p).Loadouts)
+                        .ThenInclude(l => l.Groups)
+                            .ThenInclude(group => group.Loadouts)
                 .Include(p => p.JobPreferences)
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(p => p.UserId == userId.UserId, cancel);
@@ -77,7 +87,9 @@ namespace Content.Server.Database
                 return;
             }
 
-            var blah = db.DbContext.Profile.SingleOrDefault(p => p.Slot == slot);
+            var blah = db.DbContext.Profile
+                .Where(p => p.Preference.UserId == userId.UserId)
+                .SingleOrDefault(p => p.Slot == slot);
             BaseProfile? oldProfile = blah switch
             {
                 HumanoidProfile isHumanoid =>

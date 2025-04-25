@@ -369,7 +369,7 @@ public sealed class ArrivalsSystem : EntitySystem
         ev.SpawnResult = _stationSpawning.SpawnPlayerMob(
             spawnLoc,
             ev.Job,
-            ev.HumanoidCharacterProfile,
+            ev.Profile,
             ev.Station);
 
         EnsureComp<PendingClockInComponent>(ev.SpawnResult.Value);

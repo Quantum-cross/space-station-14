@@ -19,13 +19,13 @@ public sealed partial class AgeRequirement : JobRequirement
 
     public override bool Check(IEntityManager entManager,
         IPrototypeManager protoManager,
-        HumanoidCharacterProfile? profile,
+        ICharacterProfile? profile,
         IReadOnlyDictionary<string, TimeSpan> playTimes,
         [NotNullWhen(false)] out FormattedMessage? reason)
     {
         reason = new FormattedMessage();
 
-        if (profile is null) //the profile could be null if the player is a ghost. In this case we don't need to block the role selection for ghostrole
+        if (profile is not HumanoidCharacterProfile humanoid) //the profile could be null if the player is a ghost. In this case we don't need to block the role selection for ghostrole
             return true;
 
         if (!Inverted)
@@ -33,7 +33,7 @@ public sealed partial class AgeRequirement : JobRequirement
             reason = FormattedMessage.FromMarkupPermissive(Loc.GetString("role-timer-age-too-young",
                 ("age", RequiredAge)));
 
-            if (profile.Age < RequiredAge)
+            if (humanoid.Age < RequiredAge)
                 return false;
         }
         else
@@ -41,7 +41,7 @@ public sealed partial class AgeRequirement : JobRequirement
             reason = FormattedMessage.FromMarkupPermissive(Loc.GetString("role-timer-age-too-old",
                 ("age", RequiredAge)));
 
-            if (profile.Age > RequiredAge)
+            if (humanoid.Age > RequiredAge)
                 return false;
         }
 

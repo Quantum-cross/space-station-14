@@ -45,7 +45,9 @@ public sealed partial class LobbyCharacterPreviewPanel : Control
     public void Refresh()
     {
         JobList.DisposeAllChildren();
-        var prefs = _preferences.Preferences!;
+        if (_preferences.Preferences == null)
+            return;
+        var prefs = _preferences.Preferences;
         foreach (var (job, priority) in prefs.JobPrioritiesFiltered())
         {
             var jobProfiles = prefs.GetAllProfilesForJob(job);

@@ -7,7 +7,7 @@ public abstract partial class ServerDbBase
 {
     private static BorgCharacterProfile ConvertToBorgCharacter(BorgProfile borg)
     {
-        return new BorgCharacterProfile(borg.CharacterName, (SpawnPriorityPreference)borg.SpawnPriority);
+        return new BorgCharacterProfile(borg.CharacterName, (SpawnPriorityPreference)borg.SpawnPriority, borg.Enabled);
     }
 
     private static BaseProfile ConvertBorgToDatabaseProfile(BorgCharacterProfile borg, int slot, BaseProfile? profile)

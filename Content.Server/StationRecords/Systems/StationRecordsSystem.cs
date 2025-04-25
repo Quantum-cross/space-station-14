@@ -83,9 +83,12 @@ public sealed class StationRecordsSystem : SharedStationRecordsSystem
         }
     }
 
-    private void CreateGeneralRecord(EntityUid station, EntityUid player, HumanoidCharacterProfile profile,
+    private void CreateGeneralRecord(EntityUid station, EntityUid player, ICharacterProfile profile,
         string? jobId, StationRecordsComponent records)
     {
+        if (profile is not HumanoidCharacterProfile humanoid)
+            return;
+
         // TODO make PlayerSpawnCompleteEvent.JobId a ProtoId
         if (string.IsNullOrEmpty(jobId)
             || !_prototypeManager.HasIndex<JobPrototype>(jobId))
@@ -97,7 +100,7 @@ public sealed class StationRecordsSystem : SharedStationRecordsSystem
         TryComp<FingerprintComponent>(player, out var fingerprintComponent);
         TryComp<DnaComponent>(player, out var dnaComponent);
 
-        CreateGeneralRecord(station, idUid.Value, profile.Name, profile.Age, profile.Species, profile.Gender, jobId, fingerprintComponent?.Fingerprint, dnaComponent?.DNA, profile, records);
+        CreateGeneralRecord(station, idUid.Value, humanoid.Name, humanoid.Age, humanoid.Species, humanoid.Gender, jobId, fingerprintComponent?.Fingerprint, dnaComponent?.DNA, humanoid, records);
     }
 
 

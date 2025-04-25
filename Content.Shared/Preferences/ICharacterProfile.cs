@@ -13,9 +13,9 @@ namespace Content.Shared.Preferences
 
         public const int MaxNameLength = 32;
 
-        string Name { get; }
+        string Name { get; protected internal set;  }
 
-        bool Enabled { get; }
+        bool Enabled { get; protected internal set; }
 
         ICharacterAppearance CharacterAppearance { get; }
 
@@ -33,6 +33,24 @@ namespace Content.Shared.Preferences
 
         IReadOnlySet<ProtoId<JobPrototype>> JobPreferences { get; }
 
-        ICharacterProfile AsEnabled(bool enabledValue);
+        ICharacterProfile AsEnabled(bool enabledValue = true)
+        {
+            var ret = Clone();
+            ret.Enabled = enabledValue;
+            return ret;
+        }
+
+        ICharacterProfile WithCharacterAppearance(ICharacterAppearance appearance);
+
+        ICharacterProfile Clone();
+
+        string GetRandomName();
+
+        ICharacterProfile WithName(string newName)
+        {
+            var ret = Clone();
+            ret.Name = newName;
+            return ret;
+        }
     }
 }
