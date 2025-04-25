@@ -5,9 +5,11 @@
     <BoxContainer Name="VBox" Orientation="Vertical">
         <controls:NanoHeading Name="Header" Text="{Loc 'lobby-character-preview-panel-header'}" />
         <BoxContainer Name="Loaded" Orientation="Vertical" Visible="False">
-            <ScrollContainer VerticalExpand="True" HorizontalExpand="True" MinSize="0 100">
-                <BoxContainer Name="JobList" Orientation="Vertical" VerticalExpand="True" HorizontalExpand="True"/>
-            </ScrollContainer>
+            <!-- <ScrollContainer VerticalExpand="True" HorizontalExpand="True" MinSize="0 100"> -->
+            <!--     <BoxContainer Name="JobList" Orientation="Vertical" VerticalExpand="True" HorizontalExpand="True"/> -->
+            <!-- </ScrollContainer> -->
+            <GridContainer Name="JobGrid" Columns="4" VerticalExpand="True" HorizontalExpand="True">
+            </GridContainer>
             <controls:VSpacer/>
             <Button Name="CharacterSetup" Text="{Loc 'lobby-character-preview-panel-character-setup-button'}"
                     HorizontalAlignment="Center"
