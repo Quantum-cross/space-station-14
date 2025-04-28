@@ -30,3 +30,16 @@ public sealed class CharacterInfoEvent : EntityEventArgs
         Briefing = briefing;
     }
 }
+
+[Serializable, NetSerializable]
+public sealed class ObjectiveUpdateEvent : EntityEventArgs
+{
+    public readonly int ObjectiveIdx;
+    public readonly float ObjectiveProgress;
+
+    public ObjectiveUpdateEvent(int objectiveIdx, float objectiveProgress)
+    {
+        ObjectiveIdx = objectiveIdx;
+        ObjectiveProgress = objectiveProgress;
+    }
+}

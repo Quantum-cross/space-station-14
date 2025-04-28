@@ -14,4 +14,7 @@ public sealed partial class ThiefBeaconComponent : Component
 
     [DataField]
     public SoundSpecifier UnlinkSound = new SoundPathSpecifier("/Audio/Machines/beep.ogg");
+    //
+    // [DataField]
+    // public HashSet<EntityUid> TrackedEntities = new();
 }

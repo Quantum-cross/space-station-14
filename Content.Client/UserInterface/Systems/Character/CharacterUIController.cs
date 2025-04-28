@@ -25,7 +25,8 @@ using static Robust.Client.UserInterface.Controls.BaseButton;
 namespace Content.Client.UserInterface.Systems.Character;
 
 [UsedImplicitly]
-public sealed class CharacterUIController : UIController, IOnStateEntered<GameplayState>, IOnStateExited<GameplayState>, IOnSystemChanged<CharacterInfoSystem>
+public sealed class CharacterUIController : UIController, IOnStateEntered<GameplayState>, IOnStateExited<GameplayState>,
+    IOnSystemChanged<CharacterInfoSystem>
 {
     [Dependency] private readonly IEntityManager _ent = default!;
     [Dependency] private readonly ILogManager _logMan = default!;
@@ -47,7 +48,9 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
     }
 
     private CharacterWindow? _window;
-    private MenuButton? CharacterButton => UIManager.GetActiveUIWidgetOrNull<MenuBar.Widgets.GameTopMenuBar>()?.CharacterButton;
+
+    private MenuButton? CharacterButton =>
+        UIManager.GetActiveUIWidgetOrNull<MenuBar.Widgets.GameTopMenuBar>()?.CharacterButton;
 
     public void OnStateEntered(GameplayState state)
     {
@@ -79,6 +82,7 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
     public void OnSystemLoaded(CharacterInfoSystem system)
     {
         system.OnCharacterUpdate += CharacterUpdated;
+        system.OnObjectiveUpdate += ObjectiveUpdated;
         _player.LocalPlayerDetached += CharacterDetached;
     }
 
@@ -126,6 +130,14 @@ public sealed class CharacterUIController : UIController, IOnStateEntered<Gamepl
         }
 
         CharacterButton.Pressed = true;
+    }
+
+    private void ObjectiveUpdated(string objectiveKey, float objectiveProgress)
+    {
+        if (_window == null)
+        {
+            return;
+        }
     }
 
     private void CharacterUpdated(CharacterData data)

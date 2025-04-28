@@ -7,16 +7,8 @@ namespace Content.Server.Objectives.Components;
 /// An abstract component that allows other systems to count adjacent objects as "stolen" when controlling other systems
 /// </summary>
 [RegisterComponent, Access(typeof(StealConditionSystem), typeof(ThiefBeaconSystem))]
-public sealed partial class StealAreaComponent : Component
+public sealed partial class StealStorageComponent : Component
 {
-    public const string FixtureId = "steal-area-fixture";
-
-    [DataField]
-    public bool Enabled = true;
-
-    [DataField]
-    public float Range = 1f;
-
     /// <summary>
     /// all the minds that will be credited with stealing from this area.
     /// </summary>
@@ -24,5 +16,5 @@ public sealed partial class StealAreaComponent : Component
     public HashSet<EntityUid> Owners = new();
 
     // [DataField]
-    // public HashSet<EntityUid> TrackedItems = new();
+    // public EntityUid StealArea;
 }

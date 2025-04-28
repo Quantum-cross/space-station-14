@@ -8,4 +8,6 @@ namespace Content.Server.Roles;
 [RegisterComponent]
 public sealed partial class ThiefRoleComponent : BaseMindRoleComponent
 {
+    [DataField, ViewVariables(VVAccess.ReadOnly)]
+    public HashSet<EntityUid> TrackedItems = new();
 }

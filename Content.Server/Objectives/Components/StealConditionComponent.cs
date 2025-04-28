@@ -68,4 +68,9 @@ public sealed partial class StealConditionComponent : Component
     public LocId DescriptionText;
     [DataField(required: true)]
     public LocId DescriptionMultiplyText;
+
+    [DataField]
+    [ViewVariables(VVAccess.ReadOnly)]
+    public HashSet<EntityUid> TrackedItems = new();
+
 }

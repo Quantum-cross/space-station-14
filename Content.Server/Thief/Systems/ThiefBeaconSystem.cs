@@ -1,13 +1,22 @@
+using Content.Server.Explosion.Components;
 using Content.Server.Mind;
 using Content.Server.Objectives.Components;
+using Content.Server.Objectives.Systems;
 using Content.Server.Roles;
 using Content.Server.Thief.Components;
 using Content.Shared.Examine;
 using Content.Shared.Foldable;
+using Content.Shared.Physics;
 using Content.Shared.Popups;
 using Content.Shared.Verbs;
 using Content.Shared.Roles;
+using Content.Shared.Storage;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Containers;
+using Robust.Shared.Physics.Collision.Shapes;
+using Robust.Shared.Physics.Components;
+using Robust.Shared.Physics.Events;
+using Robust.Shared.Physics.Systems;
 
 namespace Content.Server.Thief.Systems;
 
@@ -20,6 +29,12 @@ public sealed class ThiefBeaconSystem : EntitySystem
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly MindSystem _mind = default!;
     [Dependency] private readonly SharedRoleSystem _roles = default!;
+    [Dependency] private readonly FixtureSystem _fixtures = default!;
+    [Dependency] private readonly ILogManager _logManager = default!;
+    [Dependency] private readonly StealConditionSystem _steal = default!;
+
+    private ISawmill _log = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -27,6 +42,11 @@ public sealed class ThiefBeaconSystem : EntitySystem
         SubscribeLocalEvent<ThiefBeaconComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
         SubscribeLocalEvent<ThiefBeaconComponent, FoldedEvent>(OnFolded);
         SubscribeLocalEvent<ThiefBeaconComponent, ExaminedEvent>(OnExamined);
+        SubscribeLocalEvent<ThiefBeaconComponent, StartCollideEvent>(OnProximityStartCollide);
+        SubscribeLocalEvent<ThiefBeaconComponent, EndCollideEvent>(OnProximityEndCollide);
+
+
+        _log = _logManager.GetSawmill("ThiefBeaconSystem");
     }
 
     private void OnGetInteractionVerbs(Entity<ThiefBeaconComponent> beacon, ref GetVerbsEvent<InteractionVerb> args)
@@ -78,6 +98,19 @@ public sealed class ThiefBeaconSystem : EntitySystem
         _popup.PopupEntity(Loc.GetString("thief-fulton-set"), beacon);
         area.Owners.Clear(); //We only reconfigure the beacon for ourselves, we don't need multiple thieves to steal from the same beacon.
         area.Owners.Add(mind);
+        var shape = new PhysShapeCircle(area.Range);
+
+        if (!TryComp<PhysicsComponent>(beacon, out var body))
+            return;
+
+        var collisionLayer = (int)(CollisionGroup.Impassable | CollisionGroup.InteractImpassable);
+        _fixtures.TryCreateFixture(
+            beacon,
+            shape,
+            StealAreaComponent.FixtureId,
+            hard: false,
+            body: body,
+            collisionLayer: collisionLayer);
     }
 
     private void ClearCoordinate(Entity<ThiefBeaconComponent> beacon)
@@ -92,4 +125,43 @@ public sealed class ThiefBeaconSystem : EntitySystem
         _popup.PopupEntity(Loc.GetString("thief-fulton-clear"), beacon);
         area.Owners.Clear();
     }
+
+    private void OnProximityStartCollide(Entity<ThiefBeaconComponent> beacon, ref StartCollideEvent args)
+    {
+        if (!TryComp<StealAreaComponent>(beacon, out var area))
+            return;
+
+        _log.Debug($"Proximity entered {args.OtherEntity.Id}");
+
+        foreach(var owner in area.Owners)
+        {
+            _steal.TrackItem(owner, args.OtherEntity);
+        }
+
+        // EntityManager.AddComponent<StealContainerComponent>()
+        // args.OtherEntity
+        // beacon.Comp.TrackedEntities.Add(args.OtherEntity);
+    }
+
+    private void OnProximityEndCollide(Entity<ThiefBeaconComponent> beacon, ref EndCollideEvent args)
+    {
+        if (!TryComp<StealAreaComponent>(beacon, out var area))
+            return;
+
+        _log.Debug($"Proximity exited {args.OtherEntity.Id}");
+
+        foreach(var owner in area.Owners)
+        {
+            _steal.UntrackItem(owner, args.OtherEntity);
+        }
+        // beacon.Comp.TrackedEntities.Remove(args.OtherEntity);
+    }
+
+    // private void OnInserted(Entity<StorageComponent> beacon, ref EntInsertedIntoContainerMessage args)
+    // {
+    //     // if (!beacon.Comp.TrackedEntities.Contains(args.Entity))
+    //     //     return;
+    //
+    //     _log.Debug($"Item inserted into tracked container {args.Entity.Id}");
+    // }
 }

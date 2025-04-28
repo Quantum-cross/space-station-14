@@ -10,12 +10,14 @@ public sealed class CharacterInfoSystem : EntitySystem
     [Dependency] private readonly IPlayerManager _players = default!;
 
     public event Action<CharacterData>? OnCharacterUpdate;
+    public event Action<string, float>? OnObjectiveUpdate;
 
     public override void Initialize()
     {
         base.Initialize();
 
         SubscribeNetworkEvent<CharacterInfoEvent>(OnCharacterInfoEvent);
+        SubscribeNetworkEvent<ObjectiveUpdateEvent>(OnObjectiveUpdateEvent);
     }
 
     public void RequestCharacterInfo()
@@ -35,6 +37,11 @@ public sealed class CharacterInfoSystem : EntitySystem
         var data = new CharacterData(entity, msg.JobTitle, msg.Objectives, msg.Briefing, Name(entity));
 
         OnCharacterUpdate?.Invoke(data);
+    }
+
+    private void OnObjectiveUpdateEvent(ObjectiveUpdateEvent msg)
+    {
+        OnObjectiveUpdate?.Invoke(msg.ObjectiveKey, msg.ObjectiveProgress);
     }
 
     public List<Control> GetCharacterInfoControls(EntityUid uid)
