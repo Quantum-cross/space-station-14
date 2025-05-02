@@ -147,22 +147,22 @@
   - sprite: _Impstation/Mobs/Customization/markingsbundle1.rsi
     state: thavenfishears
 
-- type: marking
-  id: ThavenSpinechill
-  bodyPart: Chest
-  markingCategory: Chest
-  speciesRestriction: [ Thaven ]
-  coloring:
-    default:
-      type:
-        !type:EyeColoring
-          negative: false
-  forcedColoring: false
-  followSkinColor: false
-  sprites:
-  - sprite: _Impstation/Mobs/Customization/animatedmarkings.rsi
-    state: thavenspinechill
-  shader: unshaded
+#- type: marking
+#  id: ThavenSpinechill
+#  bodyPart: Chest
+#  markingCategory: Chest
+#  speciesRestriction: [ Thaven ]
+#  coloring:
+#    default:
+#      type:
+#        !type:EyeColoring
+#          negative: false
+#  forcedColoring: false
+#  followSkinColor: false
+#  sprites:
+#  - sprite: _Impstation/Mobs/Customization/animatedmarkings.rsi
+#    state: thavenspinechill
+#  shader: unshaded
 
 - type: marking
   id: ThavenTattooVines
@@ -175,17 +175,17 @@
   - sprite: _Impstation/Mobs/Customization/markingsbundle1.rsi
     state: thaventattoovines
 
-- type: marking
-  id: ThavenSpines
-  bodyPart: Chest
-  markingCategory: Chest
-  speciesRestriction: [ Thaven ]
-  forcedColoring: false
-  followSkinColor: false
-  sprites:
-  - sprite: _Impstation/Mobs/Customization/markingsbundle1.rsi
-    state: thavenspines
-  shader: unshaded
+#- type: marking
+#  id: ThavenSpines
+#  bodyPart: Chest
+#  markingCategory: Chest
+#  speciesRestriction: [ Thaven ]
+#  forcedColoring: false
+#  followSkinColor: false
+#  sprites:
+#  - sprite: _Impstation/Mobs/Customization/markingsbundle1.rsi
+#    state: thavenspines
+#  shader: unshaded
 
 - type: marking
   id: ThavenBiteMark
