@@ -5,15 +5,14 @@
   components:
   - type: Sprite
     sprite: _Harmony/Objects/Weapons/Bombs/Pizzabomb.rsi
-  - type: AutomatedTimer # Cannot start the timer by hand
-  - type: OnUseTimerTrigger # Timer that can be activated
-    delay: 0.5
-    examinable: false
-    initialBeepDelay: 0
-    beepSound: /Audio/Machines/microwave_done_beep.ogg
-    doPopup: false
-  - type: TriggerOnStorageOpen # Timer is triggered on storage open
-  - type: ExplodeOnTrigger # Exlosive will trigger when timer trigger is done
+  - type: TwoStageTrigger # Trigger the sound trigger, delay, then explode
+    triggerDelay: 0.5
+    components:
+    - type: ExplodeOnTrigger # Explode after the delay
+  - type: SoundOnTrigger
+    sound: /Audio/Machines/microwave_done_beep.ogg
+    removeOnTrigger: false
+  - type: TriggerOnUiOpen # Timer is triggered on storage open
   - type: Explosive # Weak explosion in a very small radius. Doesn't break underplating.
     explosionType: Default
     totalIntensity: 130
