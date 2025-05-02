@@ -118,10 +118,11 @@
     - ViolenceDistasteful
 
 # The Thaven are the only truly capable members of the crew. Other species are like children, naive and inexperienced.
-- type: thavenMood
-  id: ThavenOnlyCrew
-  moodName: thaven-mood-thaven-only-crew-name
-  moodDesc: thaven-mood-thaven-only-crew-desc
+# Harmony disabled
+# - type: thavenMood
+#   id: ThavenOnlyCrew
+#   moodName: thaven-mood-thaven-only-crew-name
+#   moodDesc: thaven-mood-thaven-only-crew-desc
 
 # You strongly believe that your department is the only one that actually does anything.
 - type: thavenMood
