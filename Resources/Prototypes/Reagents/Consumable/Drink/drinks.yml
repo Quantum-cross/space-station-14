@@ -449,6 +449,26 @@
       effects:
       - !type:SatiateThirst
         factor: 4
+    Gas: # imp special.
+      effects:
+      - !type:Oxygenate # thaven can breathe all gases safely
+        conditions:
+        - !type:OrganType
+          type: Thaven
+      - !type:SatiateThirst # thaven breathing water vapor get thirsty slower
+        conditions:
+        - !type:OrganType
+          type: Thaven
+        factor: 0.1
+      - !type:HealthChange # for slimes
+        scaleByQuantity: true
+        ignoreResistances: true
+        conditions:
+        - !type:OrganType
+          type: Slime
+        damage:
+          types:
+            Caustic: 8
 
 - type: reagent
   id: Ice
