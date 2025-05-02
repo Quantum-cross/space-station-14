@@ -4,4 +4,4 @@
 /// Triggers when StorageComponent is opened
 /// </summary>
 [RegisterComponent]
-public sealed partial class TriggerOnUiOpenComponent : Component { }
+public sealed partial class TriggerOnUiOpenComponent : Component;
