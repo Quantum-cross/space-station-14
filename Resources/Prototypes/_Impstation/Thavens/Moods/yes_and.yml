@@ -13,7 +13,7 @@
     - DinnerEtiquette
     - HugGood
     - NeverAlone
-    - VeryReligious
+#    - VeryReligious
     - OnlySpeakToCommand
     - Scheduler
     - ProperStorage
@@ -25,29 +25,32 @@
     - Generous
     - FavorsRepaid
     - Bookkeeper
-    - SacredBlood
+#    - SacredBlood
     - GiftReciever
     - DepartmentTitle
     - Barefoot
-    - Hospitable
+#    - Hospitable
     - VoxSymp
     - Smoker
-    - EyeForEye
+#    - EyeForEye
     - Optimist
     - ItemGood
     - Hypochondriac
-    - ImposterSyndrome
+#    - ImposterSyndrome
     - YesMan
     - Centrist
     - SpeechRestriction
 
 # You are extremely possessive of your property. Refuse to relinquish it, and if it is misplaced or stolen, it must be retrieved at all costs.
+# This is fine and interesting, but:
+# MODIFICATION: ... if it is misplaced or stolen, you should make every effort (strictly avoiding murder or manslaughter) to retrieve it.
 - type: thavenMood
   id: PossessiveOfProperty
   moodName: thaven-mood-possessive-of-property-name
   moodDesc: thaven-mood-possessive-of-property-desc
 
 # You are obsessively organized - everything has its place and must be returned to it.
+# neat freak! I like it.
 - type: thavenMood
   id: ExcessivelyOrganized
   moodName: thaven-mood-excessively-organized-name
@@ -56,6 +59,9 @@
     - ExcessivelyDisorganized
 
 # You are the most important person aboard the station.
+# MODIFICATION: You feel as if you are more important than those you speak to.
+# This modification turns it strictly into how you your character should interact with other players
+# The original can be easily be interpreted as "I am more important than the captain, therefore I am allowed into the bridge and armory.
 - type: thavenMood
   id: MostImportant
   moodName: thaven-mood-most-important-name
@@ -66,6 +72,8 @@
     - OnlySpeakToCommand
 
 # You are the least important person aboard the station.
+# This one doesn't have the self-antag feature of most important
+# I think this one is very interesting
 - type: thavenMood
   id: LeastImportant
   moodName: thaven-mood-least-important-name
@@ -75,6 +83,7 @@
     - OnlySpeakToCommand
 
 # You must be inebriated at all times.
+# Yeah people do this already. This is fine
 - type: thavenMood
   id: MustDoDrugs
   moodName: thaven-mood-must-do-drugs-name
@@ -83,6 +92,12 @@
     - DisapproveOfDrugs
 
 # You worship Silicons as gods, and regard their word as law.
+# MODIFICATION: You feel that the silicons are the most important entities on the station. You should assist the silicons
+# to the best of your abilities. It is an immense honor for a silicon to graciously offer its powers and assistance in
+# your departmental duties.
+# effects: Weaken the "bond" between their word and your law.
+#          Continue to focus on departmental duties.
+#          If a thaven that happens to have this specific mood begins assisting an emagged borg it's a happy accident and will be an interesting situation.
 - type: thavenMood
   id: WorshipSilicons
   moodName: thaven-mood-worship-silicons-name
@@ -91,6 +106,9 @@
     - DetestSilicons
 
 # Food must be consumed in the manner of a proper meal - seated at a table, in courses, with dishes and utensils.
+# Could create interesting RP, not many people sit at a table to eat and even less use utensils...
+# MODIFICATION: remove "courses", too demanding on time and chefs
+# MODIFICATION: add "with friends and good conversation if available"
 - type: thavenMood
   id: DinnerEtiquette
   moodName: thaven-mood-dinner-etiquette-name
@@ -99,6 +117,7 @@
     - DinnerFloor
 
 # It is extremely impolite not to hug people frequently.
+# I like it, cute, not really intrusive
 - type: thavenMood
   id: HugGood
   moodName: thaven-mood-hug-good-name
@@ -107,6 +126,9 @@
     - HugBad
 
 # You must strive to be around others whenever possible.
+# Not too disruptive, will only change behavior in understaffed situations
+# (I'm imagining two scientists working on an artifact, "I'll go get some plasma for this one", "wait let me come with!")
+# Honestly is kind of an interesting clingy personality interaction, I like it!
 - type: thavenMood
   id: NeverAlone
   moodName: thaven-mood-never-alone-name
@@ -115,14 +137,18 @@
     - AlwaysAlone
 
 # You must attend the chapel regularly to pray, and speak with the Chaplain if possible.
-- type: thavenMood
-  id: VeryReligious
-  moodName: thaven-mood-very-religious-name
-  moodDesc: thaven-mood-very-religious-desc
-  conflicts:
-    - Atheist
+# RESTRICT: This should be fine, but it should also conflict with the Atheist "trait"
+# REMOVE: Remove until it can be restricted with the Atheist trait
+#- type: thavenMood
+#  id: VeryReligious
+#  moodName: thaven-mood-very-religious-name
+#  moodDesc: thaven-mood-very-religious-desc
+#  conflicts:
+#    - Atheist # This declares that it conflicts with the Atheist mood, not the trait
 
 # You consult your bosses on all problems you encounter, not trusting the advice of your lowly peers.
+# PROBLEMATIC: This is mostly fine, but don't imply that you must consult on problems that can be solved themselves
+# MODIFICATION: You do not trust the advice of your peers, consult with your bosses if you encounter insoluble problems.
 - type: thavenMood
   id: OnlySpeakToCommand
   moodName: thaven-mood-only-speak-to-command-name
@@ -131,6 +157,7 @@
     - DontSpeakToCommand
 
 # Time must be strictly managed. Everything must be scheduled, and tardiness is exceptionally rude.
+# I like it, it creates actual interesting uses of round time for meetings, and possible usages of nanotask printouts
 - type: thavenMood
   id: Scheduler
   moodName: thaven-mood-scheduler-name
@@ -139,6 +166,10 @@
     - Procrastinator
 
 # Speaking face-to-face is unacceptably personal. Any conversation must be had over the radio, or through an intermediary individual.
+# MOVE: move to wildcard, while I think this is interesting, it can be disruptive as it would cause the player to clog up public radio channels more
+# IMPLIED SOLUTION: handheld radios? it would be nice if the handheld radios had selectable channels
+# REAL MOOD: You firmly believe in the freedom of information. Speaking privately, face-to-face, is needlessly concealing information from the public. Your side of any conversation must be routed through a radio connection.
+# must -> should
 - type: thavenMood
   id: RadioOnly
   moodName: thaven-mood-radio-only-name
@@ -147,6 +178,8 @@
     - NoRadio
 
 # It is unacceptable to allow personal belongings to touch the floor. Your possessions should be properly stored, placed on tables, or exchanged by hand.
+# I like this, not many people hand off items from hand-to-hand even though that is like "normal behavior", though make it feel less "offensive"
+# MODIFICATION: It causes you great discomfort seeing your personal belongings touching the floor. Your possessions should be properly stored, placed on tables, or exchanged by hand.
 - type: thavenMood
   id: ProperStorage
   moodName: thaven-mood-proper-storage-name
@@ -155,42 +188,55 @@
     - ImproperStorage
 
 # Theft is a morally neutral act. You don't understand the concept of property as it relates to other people.
+# PROBLEMATIC: This has high self-antag potential and requires qualifications
+# MODIFICATION: You fail to understand the concept of property as it relates to other people.
+#               This does not affect your understanding of restricted areas and breaking and entering.
+#               Because of this, you will not hesitate to take an item in reach if you require it.
 - type: thavenMood
   id: TheftNeutral
   moodName: thaven-mood-theft-neutral-name
   moodDesc: thaven-mood-theft-neutral-desc
 
 # Disagreements must be settled through a formal duel, violent or otherwise. The winner is correct.
+# MODIFICATION: "Disagreements must be settled through a consensual formal duel, violent or otherwise. Consent should be formalized in signed and stamped paperwork. The winner is correct."
 - type: thavenMood
   id: Duel
   moodName: thaven-mood-duel-name
   moodDesc: thaven-mood-duel-desc
 
 # You possess incalculable wisdom, and all must hear it.
+# MODIFICATION: You should be perceived as an artisan of your field (even if you aren't). You should ensure that you pass on wisdom and experience to your peers.
+# Rein it in to be closer to your actual job, make it less of a soapbox common radio spam thing.
+# Create an interesting situation if you're just an assistant in a job then you are like "yes I am world renowned here's all my 'secret techniques' (that are really bullshit)"
 - type: thavenMood
   id: Prometheus
   moodName: thaven-mood-prometheus-name
   moodDesc: thaven-mood-prometheus-desc
 
 # You must openly carry a lethal weapon at all times, even if you cannot use it - it is a great dishonor to be unarmed.
+# MODIFICATION: You should seek a permit to openly carry a lethal weapon at all times, even if you cannot use it - it is a great dishonor to be unarmed.
+# Lets put a slant on following the law in there...
 - type: thavenMood
   id: Klingon
   moodName: thaven-mood-klingon-name
   moodDesc: thaven-mood-klingon-desc
 
 # All agreements must be documented and signed for posterity and authenticity, no matter how small.
+# Paperwork memes, I like it
 - type: thavenMood
   id: SogginsLaw
   moodName: thaven-mood-soggins-name
   moodDesc: thaven-mood-soggins-desc
 
 # Imitation is the highest form of flattery. Attempt to emulate the mannerisms and accents of everyone you speak to.
-- type: thavenMood
-  id: Imitation
-  moodName: thaven-mood-imitation-name
-  moodDesc: thaven-mood-imitation-desc
+# Interesting and not disruptive character quirk, I like it
+#- type: thavenMood
+#  id: Imitation
+#  moodName: thaven-mood-imitation-name
+#  moodDesc: thaven-mood-imitation-desc
 
 # Everyone you speak to must recieve a gift.
+# cute!!! they can be small gifts!!!
 - type: thavenMood
   id: Generous
   moodName: thaven-mood-generous-name
@@ -199,26 +245,43 @@
     - PossessiveOfProperty
 
 # Favors must be repaid in kind. If anyone is unable to do so, they are in debt, and must be shunned, until such time as they have repaid the favor.
+# Generally good RP
 - type: thavenMood
   id: FavorsRepaid
   moodName: thaven-mood-favors-repaid-name
   moodDesc: thaven-mood-favors-repaid-desc
 
 # You feel bookkeeping is vitally important. Make sure to provide your supervisor with a detailed log of each job task you complete.
+# More paperwork memes, good
 - type: thavenMood
   id: Bookkeeper
   moodName: thaven-mood-bookkeeper-name
   moodDesc: thaven-mood-bookkeeper-desc
 
 # Your blood is sacred, and must be returned to your body if it is ever spilled.
-- type: thavenMood
-  id: SacredBlood
-  moodName: thaven-mood-sacred-blood-name
-  moodDesc: thaven-mood-sacred-blood-desc
-  conflicts:
-    - OnlyPills
+# REMOVE: this sounds really annoying to everyone involved, and even injecting your own blood causes toxin because it gets metabolized as food right now
+# MOVE: maybe this would be good as a wildcard?
+#- type: thavenMood
+#  id: SacredBlood
+#  moodName: thaven-mood-sacred-blood-name
+#  moodDesc: thaven-mood-sacred-blood-desc
+#  conflicts:
+#    - OnlyPills
 
 # You expect to receive a gift before following any orders or performing any favors.
+# After reading a lot of these, I'm starting to realize that moods that expect literally everyone else to do
+# something SPECIFICALLY FOR YOU and ONLY FOR YOU is really hard to deal with. People will just ignore you and talk to someone else.
+# -- On that note, I still really like the concept, let's see if we can heavily soften it.
+# MODIFICATION: It is customary to give a gift when requesting a task. The size, shape, or value of the gift should not matter.
+# If a person requests a task of you, you should inform them of this custom before accepting.
+# Requests that come with a gift should be prioritized and handled promptly.
+#
+# Goals of this change:
+# - Make the custom go both ways
+# - The gift can be literally anything, even trash or a dead mouse
+# - Make sure that the requestor knows of this behavior
+# - Requests that follow the custom should be REWARDED!
+# - Requests that don't follow the custom should still be handled, but thrown on the back burner
 - type: thavenMood
   id: GiftReciever
   moodName: thaven-mood-gift-reciever-name
@@ -227,6 +290,8 @@
     - LeastImportant
 
 # You must not refer directly to the names of departments - You may only refer to a specific person who works in that department.
+# I like this -- it's kind of a cute quirk that incentivises personal relationships with the people
+# instead of walking up to science saying SCIENCE MAKE ME THING or CARGO, I NEED THING (I am super guilty of this constantly)
 - type: thavenMood
   id: DepartmentTitle
   moodName: thaven-mood-no-department-title-name
@@ -235,24 +300,33 @@
     - SpeechRestriction
 
 # The ground you walk on is sacred. You must not wear shoes.
+# This is fine, but lets to must to should
+# MODIFICATION: must -> should
 - type: thavenMood
   id: Barefoot
   moodName: thaven-mood-shoes-bad-name
   moodDesc: thaven-mood-shoes-bad-desc
 
 # You must ensure all new arrivals are properly welcomed to the station.
-- type: thavenMood
-  id: Hospitable
-  moodName: thaven-mood-hospitable-name
-  moodDesc: thaven-mood-hospitable-desc
+# I really really like this but I'm wondering how difficult it is. I feel like you should be watching the radio constantly
+#   for new arrivals and then you need to stop what you're doing and go out there and find them and greet them.
+# It's REALLY CUTE in a way but it just doesn't seem fun to actually do.
+# REMOVE:
+#- type: thavenMood
+#  id: Hospitable
+#  moodName: thaven-mood-hospitable-name
+#  moodDesc: thaven-mood-hospitable-desc
 
 # Vox Sympathizer: To demonstrate your allyship for the Vox, you must be wearing internals at all times.
+# this is really cute and I like this a lot
 - type: thavenMood
   id: VoxSymp
   moodName: thaven-mood-voxsymp-name
   moodDesc: thaven-mood-voxsymp-desc
 
 # [ITEM]s are endlessly fascinating. You must collect as many as you can, and ensure others treat them with respect.
+# MODIFICATION: [ITEM]s are endlessly fascinating. You should collect them when available, and remind others to treat them with respect.
+# Remove MUSTS to quell self-antag via tunnel vision
 - type: thavenMood
   id: ItemGood
   moodName: thaven-mood-item-good-name
@@ -263,6 +337,7 @@
 #    - ItemBad
 
 # Smoker: You are hopelessly addicted to cigarettes. You must be smoking one at all times.
+# Normal character trait
 - type: thavenMood
   id: Smoker
   moodName: thaven-mood-smoker-name
@@ -272,30 +347,40 @@
     - NonSmoker
 
 # Eye For An Eye: You must treat every living being the way that it treats you.
-- type: thavenMood
-  id: EyeForEye
-  moodName: thaven-mood-eye-for-eye-name
-  moodDesc: thaven-mood-eye-for-eye-desc
+# I think this is interesting, but should be restricted off of security and command roles
+# REMOVE: until these restrictions are available
+#- type: thavenMood
+#  id: EyeForEye
+#  moodName: thaven-mood-eye-for-eye-name
+#  moodDesc: thaven-mood-eye-for-eye-desc
 
 # Optimist: You must interpret every situation in the best light that you can.
+# Normal character trait
 - type: thavenMood
   id: Optimist
   moodName: thaven-mood-optimist-name
   moodDesc: thaven-mood-optimist-desc
 
 # Hypochondriac: You've been sickly since you were a child. Everything negative you experience is the result of a potentially terminal illness, for which you need immediate medical treatment.
+# MODIFICATION: Hypochondriac: You feel that every medical problem you experience might be the result of a potentially terminal illness. You should seek treatment for any damage as soon as possible.
+# Yeah let's just keep this to medical problems, not EVERY NEGATIVE EXPERIENCE, and lasso in the treatment specifically for damage, not an imaginary terminal illness
+# INTENDED EFFECT: Going to med for a wittle scwatchy boo boo
 - type: thavenMood
   id: Hypochondriac
   moodName: thaven-mood-hypochondriac-name
   moodDesc: thaven-mood-hypochondriac-desc
 
 # Imposter Syndrome: You feel your life experience drain from your mind. You are brand-new at your job, unsure of how anything works. You should probably find someone experienced to show you the ropes.
-- type: thavenMood
-  id: ImposterSyndrome
-  moodName: thaven-mood-imposter-syndrome-name
-  moodDesc: thaven-mood-imposter-syndrome-desc
+# I like this alright, sometimes it's fun to roleplay as a newbie sometimes. Would definitely make an interesting CE with stage fright...
+# maybe this should be restricted off of command roles...
+# REMOVE: until role restriction is available
+#- type: thavenMood
+#  id: ImposterSyndrome
+#  moodName: thaven-mood-imposter-syndrome-name
+#  moodDesc: thaven-mood-imposter-syndrome-desc
 
 # Yes Man: You just can't say "no." You must agree with everyone, and perform any task requested of you, regardless of its source.
+# MODIFICATION: You just can't say "no." You should agree with everyone, and should make every effort to perform any task requested of you.
 - type: thavenMood
   id: YesMan
   moodName: thaven-mood-yes-man-name
@@ -304,6 +389,7 @@
     - Centrist
 
 # Centrist: You are ambivalent towards any and all decisions, and refuse to take sides.
+# Fine, just an indecisive character trait
 - type: thavenMood
   id: Centrist
   moodName: thaven-mood-centrist-name
@@ -312,20 +398,102 @@
     - YesMan
 
 # Public Sector: Your job should not be done in private if it can be helped. If at all possible, you should renovate the facilities to allow public access to your workplace.
-- type: thavenMood
-  id: PublicSector
-  moodName: thaven-mood-public-sector-name
-  moodDesc: thaven-mood-public-sector-desc
-  conflicts:
-    - StationIsAlive
+# REMOVE: Which department are we letting the clown and tiders in today? nahhhh
+#- type: thavenMood
+#  id: PublicSector
+#  moodName: thaven-mood-public-sector-name
+#  moodDesc: thaven-mood-public-sector-desc
+#  conflicts:
+#    - StationIsAlive
 
 # Speech Restrictions
+# Can be one of the below---
 - type: thavenMood
   id: SpeechRestriction
   moodName: thaven-mood-speech-restriction-name
   moodDesc: thaven-mood-speech-restriction-desc
   moodVars:
     speechType: SpeechRestrictions
+
+# REMOVE: Ok this throws out my whole thing about long names. Also typing out full names creates really long awkward
+#         silences when people just want to move on. I'm ok removing this one
+#  *[FullNameAndTitle] Full Name And Title
+#  *[FullNameAndTitle] Thaven refuse to acknowledge anyone who fails to refer to them using their full name, and expect everyone else to do the same.
+
+# ADDENDUM: You may suggest a description for yourself, but you do not expect others to avoid your name.
+# Just making sure that we don't expect too much of others
+#  [NamesAreRude] Names Are Rude
+#  [NamesAreRude] Using one's name is terribly personal for everyday conversation. Proper etiquette is to only refer to others by description.
+
+# Somewhat normal interesting trait.
+#  [Clarity] Clarity Is Vital
+#  [Clarity] Misunderstandings are the primary cause of conflict. You should be excessively clear and honest in your speech, explaining every minute detail, to avoid miscommunication.
+
+# ADDENDUM: You should choose your swears as carefully as other words. Unprovoked name-calling is still uncalled-for and the usage of slurs remains abhorrent as usual.
+# This could be dicey, but can be strictly qualified.
+#  [SwearingGood] !@$%#ing @$^%*#@!$
+#  [SwearingGood] Swearing is the spice of any conversation, and should be used as much as reasonably possible.
+
+# Fun, I like it. You should be able to dance around questions with statements just fine.
+#  [StatementOnly] Asking Questions Is Rude
+#  [StatementOnly] It would be terribly impolite to go around flagrantly asking questions all over the place. You'd prefer to phrase everything as a concrete statement.
+
+# REMOVE: This one is already represented above
+#  [Imitation] I Wanna Be Like You
+#  [Imitation] Imitation is the highest form of flattery. Attempting to emulate the mannerisms and accents of everyone you speak to will get you far in life.
+
+# Interesting speech restriction
+#  [Unclarity] Nothing Is Certain
+#  [Unclarity] You should endeavor to be as indirect in your speech as possible, and never make a direct statement.
+
+# Normal character trait, soften the language
+# MODIFICATION: You find swearing extremely distasteful. You should abstain from it, and encourage others to do the same.
+#  [SwearingBad] Thou Shalt Not Curse
+#  [SwearingBad] You find swearing extremely distasteful. Abstain from it, and encourage others to do the same.
+
+# Interesting speech restriction
+#  [QuestionOnly] Nothing Is Certain?
+#  [QuestionOnly] It's impolite to make concrete statements? You should phrase everything as a question, just to be safe?
+
+# Phew, this sounds like it kind of fun to play, but I feel like it would get annoying for everyone else pretty quick.
+# The "and you alone" really takes away the deference to correct the record once the misunderstanding occurs.
+# And then every question on radio becomes a major distraction
+# REMOVE:
+#  [MustAnswer] Center Of The Universe
+#  [MustAnswer] All questions that you can hear are directed at you, and you alone.
+
+#  REMOVE: these two just feel dumb and LRP
+#  [OnlyWhisper] Inside Voice
+#  [OnlyWhisper] You must whisper, as speaking too loudly is terribly rude.
+
+#  REMOVE: these two just feel dumb and LRP
+#  [OnlyYell] Outside Voice
+#  [OnlyYell] [bold]YOU MUST YELL AT ALL TIMES TO DEMONSTRATE YOUR AUTHORITY!!!!![/bold]
+
+# Good god I'm half and half on removing this. It sounds REALLY difficult to keep up over a whole shift, and will cause a lot of awkward silences...
+# REMOVE: probably
+# MODIFICATION: You should speak in rhymes as much as possible.
+# Maybe more reasonable if you soften the restriction
+#  [Rhyme] Poet
+#  [Rhyme] You must speak in rhymes at all tymes.
+
+# MODIFICATION: ... You should endeavor...
+#  [Alliterate] Always Alliterate At All Apportunities
+#  [Alliterate] Alliteration is virtuous. Endeavor to use it wherever possible.
+
+# Sure, this is thing that people do sometimes
+#  [ThirdPerson] Third Person
+#  [ThirdPerson] The third person point-of-view is the only respectful manner of speaking.
+
+# Sure
+#  [TitleCase] Title Case
+#  [TitleCase] You Are Miraculously Capable Of Pronouncing Capital Letters, And Believe It Is Important That You Do So.
+
+# REMOVE: this is some impstation race
+#  [GreySpeak] Grayspeak Is The Height Of Fashion
+#  [GreySpeak] You should endeavor to speak like Grays to the best of your ability.
+
+
 
 # The color [COLOR] is the only acceptable color for decorations. Endeavor to make your environment this color where possible.
 #- type: thavenMood

@@ -105,3 +105,6 @@ thaven-mood-aye-aye-desc = {$command} is the only position on the station. Every
 
 thaven-mood-new-job-name = Jobhopping
 thaven-mood-new-job-desc = Your current job is disgusting to you. You must endeavor to get a new one.
+
+thaven-mood-elevated-name = The Floor Is Lava
+thaven-mood-elevated-desc = You prefer to be elevated whenever possible - Standing atop tables, railings, etc., is where you feel the most comfortable.

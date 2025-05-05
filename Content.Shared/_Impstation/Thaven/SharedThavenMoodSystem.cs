@@ -7,11 +7,12 @@ public abstract class SharedThavenMoodSystem : EntitySystem
 {
     [Dependency] private readonly EmagSystem _emag = default!;
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        SubscribeLocalEvent<ThavenMoodsComponent, GotEmaggedEvent>(OnEmagged);
-    }
+    // Disable emagging thaven for now.
+    // public override void Initialize()
+    // {
+    //     base.Initialize();
+    //     SubscribeLocalEvent<ThavenMoodsComponent, GotEmaggedEvent>(OnEmagged);
+    // }
 
     protected virtual void OnEmagged(Entity<ThavenMoodsComponent> ent, ref GotEmaggedEvent args)
     {
