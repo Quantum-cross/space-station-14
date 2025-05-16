@@ -4,19 +4,19 @@ using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 namespace Content.Shared.Animations;
 
 [RegisterComponent]
-[AutoGenerateComponentPause]
 public sealed partial class AnimateOnSpawnComponent : Component
 {
-    [DataField(required: true)]
-    public TimeSpan Delay;
-
-    [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
-    [AutoPausedField]
-    public TimeSpan EndTime;
+    [DataField] public string AnimationState = "transform";
 }
 
 [Serializable, NetSerializable]
 public enum AnimateOnSpawnVisualState : byte
 {
-    State,
+    Animating,
+}
+
+[Serializable, NetSerializable]
+public enum AnimateOnSpawnVisualLayers : byte
+{
+    Animation,
 }

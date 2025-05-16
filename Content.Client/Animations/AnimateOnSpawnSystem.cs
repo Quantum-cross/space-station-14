@@ -1,6 +1,7 @@
 ﻿using Robust.Client.GameObjects;
 using Robust.Shared.Timing;
 using Content.Shared.Animations;
+using Robust.Client.Animations;
 
 namespace Content.Client.Animations;
 
@@ -10,6 +11,7 @@ public sealed class AnimateOnSpawnSystem : EntitySystem
     [Dependency] private readonly SpriteSystem _spriteSystem = default!;
     [Dependency] private readonly ILogManager _log = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearanceSystem = default!;
+    [Dependency] private readonly AnimationPlayerSystem _animationSystem = default!;
 
     private ISawmill _sawmill = default!;
 
@@ -17,30 +19,57 @@ public sealed class AnimateOnSpawnSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<AnimateOnSpawnComponent, ComponentInit>(HandleInitEvent);
+        SubscribeLocalEvent<AnimateOnSpawnComponent, ComponentStartup>(OnCompStart);
+        SubscribeLocalEvent<AnimateOnSpawnComponent, AnimationCompletedEvent>(OnAnimationComplete);
 
         _sawmill = _log.GetSawmill("AnimateOnSpawnSystem");
     }
 
-    private void HandleInitEvent(Entity<AnimateOnSpawnComponent> ent, ref ComponentInit args)
+    private void OnAnimationComplete(Entity<AnimateOnSpawnComponent> ent, ref AnimationCompletedEvent args)
     {
+        if (args.Key != "spawnAnimation")
+            return;
+        if (!HasComp<AnimationPlayerComponent>(ent) ||
+            !TryComp<SpriteComponent>(ent, out var sprite))
+            return;
 
-        _appearanceSystem.SetData(ent, AnimateOnSpawnVisualState.State, true);
-        ent.Comp.EndTime = Timing.CurTime + ent.Comp.Delay;
+        sprite.LayerSetVisible(AnimateOnSpawnVisualLayers.Animation, false);
+        _appearanceSystem.SetData(ent, AnimateOnSpawnVisualState.Animating, false);
     }
-
-    public override void Update(float frameTime)
+    
+    private void OnCompStart(Entity<AnimateOnSpawnComponent> ent, ref ComponentStartup args)
     {
-        base.Update(frameTime);
+        if (!HasComp<AnimationPlayerComponent>(ent) ||
+            !TryComp<SpriteComponent>(ent, out var sprite))
+            return;
 
-        var query = EntityQueryEnumerator<AnimateOnSpawnComponent>();
-        while (query.MoveNext(out var ent, out var animate))
+        if(!sprite.LayerMapTryGet(AnimateOnSpawnVisualLayers.Animation, out var layer))
+            return;
+        
+        var rsi = sprite.LayerGetActualRSI(AnimateOnSpawnVisualLayers.Animation);
+        if (rsi is null || !rsi.TryGetState(ent.Comp.AnimationState, out var state))
+            return;
+        var animLength = state.AnimationLength;
+        
+        var anim = new Animation
         {
-            if (Timing.CurTime > animate.EndTime)
+            AnimationTracks =
             {
-                _appearanceSystem.SetData(ent, AnimateOnSpawnVisualState.State, false);
-                RemCompDeferred(ent, animate);
-            }
-        }
+                new AnimationTrackSpriteFlick
+                {
+                    LayerKey = AnimateOnSpawnVisualLayers.Animation,
+                    KeyFrames =
+                    {
+                        new AnimationTrackSpriteFlick.KeyFrame(state.StateId, 0f)
+                    },
+                },
+            },
+            Length = TimeSpan.FromSeconds(animLength),
+        };
+
+        sprite.LayerSetVisible(AnimateOnSpawnVisualLayers.Animation, true);
+        _animationSystem.Play(ent, anim, "spawnAnimation");
+        
+        _appearanceSystem.SetData(ent, AnimateOnSpawnVisualState.Animating, true);
     }
 }
