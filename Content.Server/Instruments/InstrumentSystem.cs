@@ -6,6 +6,7 @@ using Content.Shared.Administration;
 using Content.Shared.Examine;
 using Content.Shared.Instruments;
 using Content.Shared.Instruments.UI;
+using Content.Shared.PDA;
 using Content.Shared.Physics;
 using Content.Shared.Popups;
 using JetBrains.Annotations;
@@ -451,5 +452,57 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         TryComp<InstrumentComponent>(uid, out var localComp);
         component = localComp;
         return component != null;
+    }
+
+    public void SendNote(EntityUid uid, NoteEmitterNote note, SharedNoteEmitterComponent? emitter = null)
+    {
+        if (!Resolve(uid, ref emitter))
+            return;
+        if (!TryComp<InstrumentComponent>(uid, out var instrument))
+            return;
+
+        var netUid = GetNetEntity(uid);
+
+        RaiseNetworkEvent(new InstrumentMidiEventEvent(netUid,
+            new []
+            {
+                RobustMidiEvent.NoteOn(
+                    0,
+                    note.Note,
+                    255,
+                    _timing.CurTick.Value),
+                RobustMidiEvent.NoteOff(
+                    0,
+                    note.Note,
+                    _timing.CurTick.Value + (uint)note.Duration.TotalMilliseconds),
+        }));
+    }
+
+    public void SendNoteSequence(EntityUid uid, List<NoteEmitterNote> notes, SharedNoteEmitterComponent? emitter = null)
+    {
+        if (!Resolve(uid, ref emitter))
+            return;
+        if (!TryComp<InstrumentComponent>(uid, out var instrument))
+            return;
+
+        instrument.Playing = true;
+        Dirty(uid, instrument);
+
+        var netUid = GetNetEntity(uid);
+
+        var events = new List<RobustMidiEvent>();
+
+        foreach (var note in notes)
+        {
+            events.Add(RobustMidiEvent.NoteOn(0,
+                note.Note,
+                255,
+                (uint)note.Start.TotalMilliseconds));
+            events.Add(RobustMidiEvent.NoteOff(0,
+                note.Note,
+                (uint)(note.Start.TotalMilliseconds + note.Duration.TotalMilliseconds)));
+        }
+        events.Sort((x, y) => x.Tick.CompareTo(y.Tick));
+        RaiseNetworkEvent(new InstrumentMidiEventEvent(netUid, events.ToArray()));
     }
 }
