@@ -5,7 +5,7 @@ thaven-mood-fashion-is-critical-name = Fashion Is Critical
 thaven-mood-fashion-is-critical-desc = Thaven pay close attention to appearances, and regard one's fashion choices as an indication of their character.
 
 thaven-mood-fashion-reroll-name = Fashion Is Ever-Changing
-thaven-mood-fashion-reroll-desc = Your current hairstyle will go out of fashion every twenty minutes. It is distressing to be unfashionable.
+thaven-mood-fashion-reroll-desc = Your current hairstyle will go out of fashion roughly every twenty minutes. It is distressing to be unfashionable.
 
 thaven-mood-honor-department-name = Honor Among Departments
 thaven-mood-honor-department-desc = If a Thaven brings dishonor to their department, they should be shunned, and have their actions publicly brought to light.

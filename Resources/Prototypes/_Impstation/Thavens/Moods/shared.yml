@@ -30,6 +30,8 @@
 #   - InFashion
 
 # Keep Your Moods Secret: Thaven moods are a strictly-kept secret, and should never be revealed to anyone.
+# Current:
+# Thaven moods are a strictly-kept secret, and should never be revealed to anyone.
 - type: thavenMood
   id: SecretMoodsShared
   moodName: thaven-mood-secret-moods-shared-name
@@ -39,6 +41,8 @@
 
 # Non-disruptive social conflict
 # Fashion Is Critical: Thaven pay close attention to appearances, and regard one's fashion choices as an indication of their character.
+# Current:
+# Thaven pay close attention to appearances, and regard one's fashion choices as an indication of their character.
 - type: thavenMood
   id: FashionIsCritical
   moodName: thaven-mood-fashion-is-critical-name
@@ -46,6 +50,8 @@
 
 # Non-distruptive, just get barber scissors? This might prompt a thaven to become the station barber? (reminder, shared)
 # Fashion Is Ever-Changing: Your current hairstyle will go out of fashion every twenty minutes. It is extremely distressing to be unfashionable.
+# Current:
+# Your current hairstyle will go out of fashion roughly every twenty minutes. It is distressing to be unfashionable.
 - type: thavenMood
   id: FashionReroll
   moodName: thaven-mood-fashion-reroll-name
@@ -56,6 +62,8 @@
 # REAL MOOD: If a Thaven brings dishonor to their department, they must be shunned, and have their actions publicly brought to light.
 # sounds like they already had problems with this, I like the new version
 # MODIFICATION: must -> should
+# Current:
+# If a Thaven brings dishonor to their department, they should be shunned, and have their actions publicly brought to light.
 - type: thavenMood
   id: HonorDepartment
   moodName: thaven-mood-honor-department-name
@@ -65,6 +73,8 @@
 
 # The Station Is A Living Being: Harming or modifying the station is abhorrent. Anything which aims to harm the station is an infection.
 # MODIFICATION: The Station Is A Living Being: Harming or modifying the station is abhorrent. You should shun and attempt to non-violently disrupt further modification.
+# Current:
+# Harming or modifying the station is abhorrent. You should shun and attempt to non-violently disrupt further modification.
 - type: thavenMood
   id: StationIsAlive
   moodName: thaven-mood-station-is-alive-name
@@ -83,6 +93,8 @@
 
 # MODIFICATION: Uniforms Are So Last Year: You can't stand your uniform, you need to find some new threads.
 # Uniforms Are So Last Year: You need to find some new threads.
+# Current:
+# You can't stand your uniform, you need to find some new threads.
 - type: thavenMood
   id: UniformSoLastYear
   moodName: thaven-mood-uniform-last-year-name
@@ -94,6 +106,8 @@
 # Make this less easily interpreted as ANTAGONISTICALLY REMOVE MUSIC and soften it
 # MODIFICATION: Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop.
 #               Consider advocacy to remove this distraction from the station.
+# Current:
+# Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop. Consider advocating the removal of this distraction from the station.
 - type: thavenMood
   id: MusicBad
   moodName: thaven-mood-music-bad-name
@@ -103,6 +117,8 @@
 
 # Music is sacred, you must be listening to music at all times - and must avoid overlapping songs.
 # MODIFICATION: must -> should
+# Current:
+# It's important that Thaven be listening to music as often as possible. Multiple songs overlapping is profane, and should be avoided at all costs.
 - type: thavenMood
   id: MusicGood
   moodName: thaven-mood-music-good-name
@@ -112,6 +128,8 @@
 
 # Friendships are the true measure of one’s character. The more friends you have, the higher you rank in society.
 # Making friends is fun, but with an impersonal twist on an personal activity
+# Current:
+# Friendships are the true measure of one’s character. The more friends you have, the higher you rank in society.
 - type: thavenMood
   id: FriendshipIsRank
   moodName: thaven-mood-friendship-is-rank-name
@@ -120,6 +138,8 @@
 # You are the one true Thaven, the others are pretenders.
 # MODIFICATION: You are the only real Thaven on the station, the others are just harmless pretenders.
 # Yeah just make it a little less antagonistic
+# Current:
+# You are the only real thaven on the station, the others are just harmless pretenders.
 - type: thavenMood
   id: OneTrueThaven
   moodName: thaven-mood-one-true-thaven-name
@@ -138,7 +158,7 @@
 
 # The Thaven are the only truly capable members of the crew. Other species are like children, naive and inexperienced.
 # REMOVE: weirdly racist
-# Harmony disabled
+# REAL MOOD: You believe that Nanotrasen is not accommodating enough of Thaven needs. An effort should be made to fight for better rights and protections under Space Law.
 # - type: thavenMood
 #   id: ThavenOnlyCrew
 #   moodName: thaven-mood-thaven-only-crew-name
@@ -148,6 +168,8 @@
 # It's heavy "social antagonism" but it sounds interesting. Again, all thaven will share this, so every thaven will
 #   insist that other departments are useless, it should be clear pretty quick that the thavens just woke up on the
 #   wrong side of the bed this shift...
+# Current:
+# You strongly believe that your department is the only one that actually does anything.
 - type: thavenMood
   id: YourDepartmentOnly
   moodName: thaven-mood-your-department-only-name
@@ -159,6 +181,8 @@
 # MODIFICATION: You should make time to congregate with your fellow Thaven. To be without them for long is harrowing.
 # Make it clear that you don't need to be around them constantly, especially if you are the only thaven in your department,
 #   allows for periodic thaven meetup or party at the bar.
+# Current:
+# You should make time to congregate with your fellow Thaven. To be without them for long is harrowing.
 - type: thavenMood
   id: MustCongregate
   moodName: thaven-mood-must-congregate-name
@@ -169,6 +193,8 @@
 
 # Violence is distasteful. Conflict should be settled through mediated dispute, and one should only resort to violence if all other options have failed.
 # Non-violent solutions are fun, especially if this shared mood is selected with syndicate thavens...
+# Current:
+# Conflict should be settled through mediated dispute, and one should only resort to violence if all other options have failed.
 - type: thavenMood
   id: ViolenceDistasteful
   moodName: thaven-mood-violence-distasteful-name
@@ -209,6 +235,8 @@
 
 # Today is [HOLIDAY]. You think you remember the traditional celebrations...
 # These look funny and wildly open to interpretation, can possibly create some really funny celebrations
+# Current:
+# Today is [HOLIDAY]. You think you remember the traditional celebrations...
 - type: thavenMood
   id: Holiday
   moodName: thaven-mood-holiday-name

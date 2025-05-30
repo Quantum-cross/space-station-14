@@ -41,7 +41,7 @@ thaven-mood-improper-storage-name = I'm Not A Pack Mule
 thaven-mood-improper-storage-desc = Carrying tools on your person is demeaning. If you must use them, they should be dragged behind you, shamefully.
 
 thaven-mood-ferengi-name = Entrepreneurial Spirit
-thaven-mood-ferengi-desc =  Above all else, you should strive to generate profit for your department and the station.
+thaven-mood-ferengi-desc = Above all else, you should strive to generate profit for your department and the station.
 
 ## thaven-mood-tool-license-name = Proper Documentation
 ## thaven-mood-tool-license-desc = You must obtain a license in order to carry or use any tool, and have it stamped by the relevant authorities.
@@ -77,7 +77,7 @@ thaven-mood-only-pills-name = Needles Are Scary
 thaven-mood-only-pills-desc = You are intensely afraid of needles and should prefer medication to be administered in pill form.
 
 thaven-mood-avoid-puddles-name = Don't Get Your Feet Wet
-thaven-mood-avoid-puddles-desc = It is undignified and unsanitary to walk over spilled liquids. You should avoid it.
+thaven-mood-avoid-puddles-desc = It is undignified and unsanitary to walk over spilled liquids. You should avoid it whenever possible.
 
 thaven-mood-claustrophobic-name = Claustrophobic
 thaven-mood-claustrophobic-desc = Small rooms cause you great distress. You should avoid them where possible, and renovate your workplace if necessary.
