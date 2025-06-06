@@ -113,7 +113,8 @@
 #         and is a classic sci-fi trope
 # PROBLEMATIC: Unless you consider this some sort of racism or "othering" behavior?
 # Current:
-# Speaking to them is demeaning, and should be avoided at all costs.
+# Law-bound silicons are beneath you:
+# Speaking to law-bound cyborgs and the station AI is demeaning, and should be avoided.
 - type: thavenMood
   id: DetestSilicons
   moodName: thaven-mood-detest-silicons-name

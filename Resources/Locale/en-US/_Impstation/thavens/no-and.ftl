@@ -16,8 +16,8 @@ thaven-mood-disapprove-of-drugs-desc = You detest mind-altering drugs, including
 thaven-mood-excessively-disorganized-name = Too Much Cleanliness Causes Illness
 thaven-mood-excessively-disorganized-desc = It's unnatural. You should endeavor to keep your work environment as filthy and disorganized as possible.
 
-thaven-mood-detest-silicons-name = Silicons Are Beneath You
-thaven-mood-detest-silicons-desc = Speaking to them is demeaning, and should be avoided at all costs.
+thaven-mood-detest-silicons-name = Law-bound Silicons are Beneath You
+thaven-mood-detest-silicons-desc = Speaking to law-bound cyborgs and the station AI is demeaning, and should be avoided.
 
 thaven-mood-dinner-floor-name = Dinner Etiquette
 thaven-mood-dinner-floor-desc = Food and drink should only be consumed off of the floor, as is proper.
