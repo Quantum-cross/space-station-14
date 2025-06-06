@@ -107,7 +107,7 @@
 # MODIFICATION: Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop.
 #               Consider advocacy to remove this distraction from the station.
 # Current:
-# Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop. Consider advocating the removal of this distraction from the station.
+# Music is fanciful, frivolous, and unnecessary. You should strive to ensure that this raucous distraction does not enter your ears!
 - type: thavenMood
   id: MusicBad
   moodName: thaven-mood-music-bad-name

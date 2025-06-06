@@ -20,7 +20,7 @@ thaven-mood-uniform-last-year-name = Your Uniform Is SO Last Year
 thaven-mood-uniform-last-year-desc = You can't stand your uniform, you need to find some new threads.
 
 thaven-mood-music-bad-name = Music Is Rude
-thaven-mood-music-bad-desc = Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop. Consider advocating the removal of this distraction from the station.
+thaven-mood-music-bad-desc = Music is fanciful, frivolous, and unnecessary. You should strive to ensure that this raucous distraction does not enter your ears!
 
 thaven-mood-music-good-name = Music Is Sacred
 thaven-mood-music-good-desc = It's important that Thaven be listening to music as often as possible. Multiple songs overlapping is profane, and should be avoided at all costs.
