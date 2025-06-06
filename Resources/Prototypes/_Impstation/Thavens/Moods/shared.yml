@@ -107,7 +107,8 @@
 # MODIFICATION: Music is fanciful, frivolous, and unnecessary. You dislike anyone playing music, and despise those who continue when being asked to stop.
 #               Consider advocacy to remove this distraction from the station.
 # Current:
-# Music is fanciful, frivolous, and unnecessary. You should strive to ensure that this raucous distraction does not enter your ears!
+# Music Snob
+# Thavens have a superior and curated taste in music, and refuse to listen to any music that isn't played by a thaven.
 - type: thavenMood
   id: MusicBad
   moodName: thaven-mood-music-bad-name

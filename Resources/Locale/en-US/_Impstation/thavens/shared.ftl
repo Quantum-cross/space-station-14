@@ -19,8 +19,8 @@ thaven-mood-station-is-alive-desc = Harming or modifying the station is abhorren
 thaven-mood-uniform-last-year-name = Your Uniform Is SO Last Year
 thaven-mood-uniform-last-year-desc = You can't stand your uniform, you need to find some new threads.
 
-thaven-mood-music-bad-name = Music Is Rude
-thaven-mood-music-bad-desc = Music is fanciful, frivolous, and unnecessary. You should strive to ensure that this raucous distraction does not enter your ears!
+thaven-mood-music-bad-name = Music Snob
+thaven-mood-music-bad-desc = Thavens have a superior and curated taste in music, and refuse to listen to any music that isn't played by a thaven.
 
 thaven-mood-music-good-name = Music Is Sacred
 thaven-mood-music-good-desc = It's important that Thaven be listening to music as often as possible. Multiple songs overlapping is profane, and should be avoided at all costs.
