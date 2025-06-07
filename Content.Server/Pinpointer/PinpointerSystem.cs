@@ -5,6 +5,8 @@ using System.Numerics;
 using Robust.Shared.Utility;
 using Content.Server.Shuttles.Events;
 using Content.Shared.IdentityManagement;
+using Content.Shared.Tag;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Pinpointer;
 
@@ -12,6 +14,7 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
 {
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
+    [Dependency] private readonly TagSystem _tagSystem = default!;
 
     private EntityQuery<TransformComponent> _xformQuery;
 
@@ -76,7 +79,9 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
     private void LocateTarget(EntityUid uid, PinpointerComponent component)
     {
         // try to find target from whitelist
-        if (component.IsActive && component.Component != null)
+        if (!component.IsActive)
+            return;
+        if(component.Component != null)
         {
             if (!EntityManager.ComponentFactory.TryGetRegistration(component.Component, out var reg))
             {
@@ -86,6 +91,11 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
             }
 
             var target = FindTargetFromComponent(uid, reg.Type);
+            SetTarget(uid, target, component);
+        }
+        else if (component.Tag != null)
+        {
+            var target = FindTargetFromTag(uid, component.Tag);
             SetTarget(uid, target, component);
         }
     }
@@ -121,6 +131,34 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
 
         foreach (var (otherUid, _) in EntityManager.GetAllComponents(whitelist))
         {
+            if (!_xformQuery.TryGetComponent(otherUid, out var compXform) || compXform.MapID != mapId)
+                continue;
+
+            var dist = (_transform.GetWorldPosition(compXform) - worldPos).LengthSquared();
+            l.TryAdd(dist, otherUid);
+        }
+
+        // return uid with a smallest distance
+        return l.Count > 0 ? l.First().Value : null;
+    }
+
+    private EntityUid? FindTargetFromTag(EntityUid uid, ProtoId<TagPrototype> tag, TransformComponent? transform = null)
+    {
+        _xformQuery.Resolve(uid, ref transform, false);
+
+        if (transform == null)
+            return null;
+
+        // sort all entities in distance increasing order
+        var mapId = transform.MapID;
+        var l = new SortedList<float, EntityUid>();
+        var worldPos = _transform.GetWorldPosition(transform);
+
+        foreach (var (otherUid, tagComponentI) in EntityManager.GetAllComponents(typeof(TagComponent)))
+        {
+            if (tagComponentI is not TagComponent tagComponent || !_tagSystem.HasTag(tagComponent, tag))
+                continue;
+
             if (!_xformQuery.TryGetComponent(otherUid, out var compXform) || compXform.MapID != mapId)
                 continue;
 

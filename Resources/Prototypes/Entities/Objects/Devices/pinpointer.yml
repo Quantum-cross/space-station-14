@@ -129,3 +129,12 @@
   - type: Pinpointer
     component: XenoborgMothership
     targetName: the mothership
+
+- type: entity
+  name: donkpointer
+  id: PinpointerDonk
+  parent: [ PinpointerBase ]
+  components:
+  - type: Pinpointer
+    tag: DonkPocket
+    targetName: Donk Pocket

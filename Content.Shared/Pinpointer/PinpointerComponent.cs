@@ -15,6 +15,9 @@ public sealed partial class PinpointerComponent : Component
     [DataField("component"), ViewVariables(VVAccess.ReadWrite)]
     public string? Component;
 
+    [DataField]
+    public string? Tag;
+
     [DataField("mediumDistance"), ViewVariables(VVAccess.ReadWrite)]
     public float MediumDistance = 16f;
 
