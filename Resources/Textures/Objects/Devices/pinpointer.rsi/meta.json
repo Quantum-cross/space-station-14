@@ -163,6 +163,32 @@
         {
             "name": "inhand-right",
             "directions": 4
+        },
+        {
+            "name": "donkonclose"
+        },
+        {
+            "name": "donkonmedium"
+        },
+        {
+            "name": "donkonfar"
+        },
+        {
+            "name": "donkondirect",
+            "delays": [
+                [
+                    0.2,
+                    0.2,
+                    0.2,
+                    0.2,
+                    1.0,
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1,
+                    1.0
+                ]
+            ]
         }
     ]
 }

@@ -1,0 +1,5 @@
+- type: localizedDataset
+  id: DonkFacts
+  values:
+    prefix: donk-facts-
+    count: 1

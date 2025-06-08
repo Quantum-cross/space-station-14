@@ -138,3 +138,20 @@
   - type: Pinpointer
     tag: DonkPocket
     targetName: Donk Pocket
+  - type: GenericVisualizer
+    visuals:
+      enum.PinpointerVisuals.IsActive:
+        enum.PinpointerLayers.Screen:
+          True: { visible: True }
+          False: { visible: False }
+      enum.PinpointerVisuals.TargetDistance:
+        enum.PinpointerLayers.Screen:
+          Unknown: { state: pinonnull }
+          Reached: { state: donkondirect }
+          Close: { state: donkonclose }
+          Medium: { state: donkonmedium }
+          Far: { state: donkonfar }
+  - type: Advertise
+    pack: DonkFacts
+    minimumWait: 60
+    maximumWait: 240
