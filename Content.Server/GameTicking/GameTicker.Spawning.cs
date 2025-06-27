@@ -9,6 +9,7 @@ using Content.Server.Ghost;
 using Content.Server.Spawners.Components;
 using Content.Server.Speech.Components;
 using Content.Server.Station.Components;
+using Content.Server.Station.Systems;
 using Content.Shared.CCVar;
 using Content.Shared.Database;
 using Content.Shared.GameTicking;
@@ -94,43 +95,49 @@ namespace Content.Server.GameTicking
             }
 
             var spawnableStations = GetSpawnableStations();
-            var assignedJobs = _stationJobs.AssignJobs(netUserIds, spawnableStations);
+            var jobAssignments = _stationJobs.AssignJobs(netUserIds, spawnableStations);
 
             // Calculate extended access for stations.
             var stationJobCounts = spawnableStations.ToDictionary(e => e, _ => 0);
+
             foreach (var netUser in netUserIds)
             {
-                if(!assignedJobs.TryGetValue(netUser, out var assignment) || assignment.job is null)
+                var assignment = jobAssignments.GetOrNew(netUser);
+                if(assignment.AssignedJob is null || assignment.AssignedStation is null)
                 {
                     var playerSession = _playerManager.GetSessionById(netUser);
                     var evNoJobs = new NoJobsAvailableSpawningEvent(playerSession); // Used by gamerules to wipe their antag slot, if they got one
                     RaiseLocalEvent(evNoJobs);
-
-                    _chatManager.DispatchServerMessage(playerSession, Loc.GetString("job-not-available-wait-in-lobby"));
                 }
                 else
                 {
-                    stationJobCounts[assignment.station] += 1;
+                    stationJobCounts[assignment.AssignedStation.Value] += 1;
                 }
             }
 
             _stationJobs.CalcExtendedAccess(stationJobCounts);
 
             // Spawn everybody in!
-            foreach (var (player, (job, station)) in assignedJobs)
+            foreach (var (player, assignment) in jobAssignments)
             {
-                if (job == null)
-                    continue;
-
                 var playerSession = _playerManager.GetSessionById(player);
+
+                if (assignment.AssignedJob == null || assignment.AssignedStation == null)
+                {
+                    var msg = GetJoinFailureMsg(player, assignment);
+                    if (msg is not null)
+                        _chatManager.DispatchServerMessage(playerSession, msg);
+
+                    continue;
+                }
 
                 // Select a profile for the player
                 var playerPrefs = _prefsManager.GetPreferences(player);
-                var playerProfiles = playerPrefs.GetAllEnabledProfilesForJob(job.Value);
+                var playerProfiles = playerPrefs.GetAllEnabledProfilesForJob(assignment.AssignedJob.Value);
 
                 // Filter out job requirements
                 var filteredPlayerProfiles = playerProfiles.Values.Where(profile =>
-                    JobRequirements.TryRequirementsMet(job.Value,
+                    JobRequirements.TryRequirementsMet(assignment.AssignedJob.Value,
                         null,
                         out _,
                         EntityManager,
@@ -157,15 +164,48 @@ namespace Content.Server.GameTicking
 
                 var profile = _robustRandom.Pick(finalPlayerProfiles.ToList());
 
-                SpawnPlayer(playerSession, profile, station, job, false);
+                SpawnPlayer(playerSession, profile, assignment.AssignedStation.Value, assignment.AssignedJob.Value, false);
             }
 
             RefreshLateJoinAllowed();
 
             // Allow rules to add roles to players who have been spawned in. (For example, on-station traitors)
             RaiseLocalEvent(new RulePlayerJobsAssignedEvent(
-                assignedJobs.Keys.Select(x => _playerManager.GetSessionById(x)).ToArray(),
+                jobAssignments.Keys.Select(x => _playerManager.GetSessionById(x)).ToArray(),
                 force));
+        }
+
+        private string? GetJoinFailureMsg(NetUserId netUser, JobAssignment assignment)
+        {
+            var joinFailureLines = new List<string>();
+
+            joinFailureLines.Add(Loc.GetString("job-not-available-wait-in-lobby"));
+
+            var slotFullDenial = false;
+            foreach(var (job, reason) in assignment.DeniedJobs ?? [])
+            {
+                if(reason == JobDenialReason.SlotsFull)
+                    slotFullDenial = true;
+
+                var jobName = _prototypeManager.TryIndex(job, out var jobProto) ? Loc.GetString(jobProto.Name) : job.Id;
+                joinFailureLines.Add(reason switch
+                {
+                    JobDenialReason.AntagIncompatible => Loc.GetString("job-not-available-reason-antag-incompatible", ("jobName", jobName)),
+                    JobDenialReason.RoleBanned => Loc.GetString("job-not-available-role-ban", ("jobName", jobName)),
+                    JobDenialReason.Whitelist => Loc.GetString("job-not-available-whitelist", ("jobName", jobName)),
+                    JobDenialReason.JobRequirement => Loc.GetString("job-not-available-job-requirements", ("jobName", jobName)),
+                    JobDenialReason.SlotsFull => Loc.GetString("job-not-available-reason-slots-full", ("jobName", jobName)),
+                    JobDenialReason.NotOnStation => Loc.GetString("job-not-available-reason-not-on-station", ("jobName", jobName)),
+                    _ => throw new ArgumentOutOfRangeException(),
+                });
+            }
+
+            if (slotFullDenial)
+                joinFailureLines.Add(Loc.GetString("job-not-available-late-join-reminder"));
+
+            joinFailureLines.Add(Loc.GetString("job-not-available-always-join-suggestion", ("fallbackJob", FallbackOverflowJob)));
+
+            return string.Join("\n", joinFailureLines);
         }
 
         private void SpawnPlayer(ICommonSession player,

@@ -7,6 +7,7 @@ using Content.Server.GameTicking;
 using Content.Server.GameTicking.Events;
 using Content.Server.Preferences.Managers;
 using Content.Server.Station.Events;
+using Content.Server.Station.Systems;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
 using Content.Shared.Mobs;
@@ -172,7 +173,11 @@ public sealed class PlayTimeTrackingSystem : EntitySystem
 
     private void OnStationJobsGetCandidates(ref StationJobsGetCandidatesEvent ev)
     {
-        RemoveDisallowedJobs(ev.Player, ev.Jobs);
+        var removedJobs = RemoveDisallowedJobs(ev.Player, ev.Jobs);
+        foreach (var job in removedJobs)
+        {
+            ev.JobDenials.TryAdd(job, JobDenialReason.JobRequirement);
+        }
     }
 
     private void OnIsJobAllowed(ref IsJobAllowedEvent ev)
@@ -231,8 +236,10 @@ public sealed class PlayTimeTrackingSystem : EntitySystem
         return roles;
     }
 
-    public void RemoveDisallowedJobs(NetUserId userId, List<ProtoId<JobPrototype>> jobs)
+    public HashSet<ProtoId<JobPrototype>> RemoveDisallowedJobs(NetUserId userId, List<ProtoId<JobPrototype>> jobs)
     {
+        var jobsRemoved = new HashSet<ProtoId<JobPrototype>>();
+
         var player = _playerManager.GetSessionById(userId);
 
         var playTimes = GetPlayTimesIfEnabled(player);
@@ -244,8 +251,13 @@ public sealed class PlayTimeTrackingSystem : EntitySystem
             var allProfilesForJob = _preferencesManager.GetPreferences(player.UserId).GetAllEnabledProfilesForJob(job);
             if (allProfilesForJob.Values.All(profile =>
                     !JobRequirements.TryRequirementsMet(jobToRemove, playTimes, out _, EntityManager, _prototypes, profile)))
+            {
+                jobsRemoved.Add(job);
                 jobs.Remove(job);
+            }
         }
+
+        return jobsRemoved;
     }
 
     public void PlayerRolesChanged(ICommonSession player)

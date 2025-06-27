@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Content.Server.GameTicking.Events;
 using Content.Server.Station.Events;
+using Content.Server.Station.Systems;
 using Content.Shared.CCVar;
 using Content.Shared.Roles;
 using Robust.Server.Player;
@@ -47,6 +48,7 @@ public sealed class JobWhitelistSystem : EntitySystem
                 !_manager.IsAllowed(player, jobId))
             {
                 ev.Jobs.RemoveSwap(i);
+                ev.JobDenials.TryAdd(jobId, JobDenialReason.Whitelist);
             }
         }
     }

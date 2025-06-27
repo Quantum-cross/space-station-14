@@ -136,7 +136,7 @@ public sealed class StationJobsTest
                 foreach (var station in stations)
                 {
                     var assignedHere = assigned
-                        .Where(x => x.Value.Item2 == station)
+                        .Where(x => x.Value.AssignedStation == station)
                         .ToDictionary(x => x.Key, x => x.Value);
 
                     // Each station should have SOME players.
@@ -146,19 +146,19 @@ public sealed class StationJobsTest
                     // And it shouldn't have ALL the players, either.
                     Assert.That(assignedHere, Has.Count.LessThan(TotalPlayers), "Station has too many players.");
                     // And there should be *A* captain, as there's one player with captain enabled per station.
-                    Assert.That(assignedHere.Where(x => x.Value.Item1 == "TCaptain").ToList(), Has.Count.EqualTo(1));
+                    Assert.That(assignedHere.Where(x => x.Value.AssignedJob == "TCaptain").ToList(), Has.Count.EqualTo(1));
                 }
 
                 // All clown players have assistant as a higher priority.
-                Assert.That(assigned.Values.Select(x => x.Item1).ToList(), Does.Not.Contain("TClown"));
+                Assert.That(assigned.Values.Select(x => x.AssignedJob).ToList(), Does.Not.Contain("TClown"));
                 // Mime isn't an open job-slot at round-start.
-                Assert.That(assigned.Values.Select(x => x.Item1).ToList(), Does.Not.Contain("TMime"));
+                Assert.That(assigned.Values.Select(x => x.AssignedJob).ToList(), Does.Not.Contain("TMime"));
                 // All players have slots they can fill.
                 Assert.That(assigned.Values, Has.Count.EqualTo(TotalPlayers), $"Expected {TotalPlayers} players.");
                 // There must be assistants present.
-                Assert.That(assigned.Values.Select(x => x.Item1).ToList(), Does.Contain("TAssistant"));
+                Assert.That(assigned.Values.Select(x => x.AssignedJob).ToList(), Does.Contain("TAssistant"));
                 // There must be captains present, too.
-                Assert.That(assigned.Values.Select(x => x.Item1).ToList(), Does.Contain("TCaptain"));
+                Assert.That(assigned.Values.Select(x => x.AssignedJob).ToList(), Does.Contain("TCaptain"));
             });
         });
         await pair.CleanReturnAsync();

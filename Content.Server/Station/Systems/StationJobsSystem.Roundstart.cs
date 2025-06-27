@@ -56,7 +56,7 @@ public sealed partial class StationJobsSystem
     /// as there may end up being more round-start slots than available slots, which can cause weird behavior.
     /// A warning to all who enter ye cursed lands: This function is long and mildly incomprehensible. Best used without touching.
     /// </remarks>
-    public Dictionary<NetUserId, (ProtoId<JobPrototype>? job, EntityUid station)> AssignJobs(IReadOnlySet<NetUserId> userIdsIn, IReadOnlyList<EntityUid> stations, bool useRoundStartJobs = true)
+    public Dictionary<NetUserId, JobAssignment> AssignJobs(IReadOnlySet<NetUserId> userIdsIn, IReadOnlyList<EntityUid> stations, bool useRoundStartJobs = true)
     {
         DebugTools.Assert(stations.Count > 0);
 
@@ -69,20 +69,18 @@ public sealed partial class StationJobsSystem
         var userIds = userIdsIn.ToHashSet();
 
         // Player <-> (job, station)
-        var assigned = new Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>(userIds.Count);
+        var assigned = new Dictionary<NetUserId, JobAssignment>(userIds.Count);
 
         // The jobs left on the stations. This collection is modified as jobs are assigned to track what's available.
         var stationJobs = new Dictionary<EntityUid, Dictionary<ProtoId<JobPrototype>, int?>>();
+        var allAvailableJobs = new HashSet<ProtoId<JobPrototype>>();
         foreach (var station in stations)
         {
-            if (useRoundStartJobs)
-            {
-                stationJobs.Add(station, GetRoundStartJobs(station).ToDictionary(x => x.Key, x => x.Value));
-            }
-            else
-            {
-                stationJobs.Add(station, GetJobs(station).ToDictionary(x => x.Key, x => x.Value));
-            }
+            var curStationJobs = useRoundStartJobs
+                ? GetRoundStartJobs(station).ToDictionary(x => x.Key, x => x.Value)
+                : GetJobs(station).ToDictionary(x => x.Key, x => x.Value);
+            stationJobs.Add(station, curStationJobs);
+            allAvailableJobs.UnionWith(curStationJobs.Keys);
         }
 
 
@@ -101,6 +99,9 @@ public sealed partial class StationJobsSystem
         // The share of the players each station gets in the current iteration of job selection.
         var stationShares = new Dictionary<EntityUid, int>(stations.Count);
 
+        // Keep track of excluded jobs to let the user know whey they were left in the lobby.
+        var deniedJobs = new Dictionary<NetUserId, Dictionary<ProtoId<JobPrototype>, JobDenialReason>>();
+
         // Ok so the general algorithm:
         // We start with the highest weight jobs and work our way down. We filter jobs by weight when selecting as well.
         // Weight > Priority > Station.
@@ -111,7 +112,7 @@ public sealed partial class StationJobsSystem
                 if (userIds.Count == 0)
                     goto endFunc;
 
-                var candidates = GetPlayersJobCandidates(weight, selectedPriority, userIds);
+                var candidates = GetPlayersJobCandidates(weight, selectedPriority, userIds, ref deniedJobs);
 
                 var optionsRemaining = 0;
 
@@ -128,7 +129,7 @@ public sealed partial class StationJobsSystem
 
                     stationJobs[station][job]--;
                     userIds.Remove(player);
-                    assigned.Add(player, (job, station));
+                    assigned.Add(player, new JobAssignment(job, station));
 
                     optionsRemaining--;
                 }
@@ -142,6 +143,9 @@ public sealed partial class StationJobsSystem
                 {
                     foreach (var job in jobs)
                     {
+                        if (!allAvailableJobs.Contains(job))
+                            deniedJobs.GetOrNew(user).TryAdd(job, JobDenialReason.NotOnStation);
+
                         if (!jobPlayerOptions.ContainsKey(job))
                             jobPlayerOptions.Add(job, new HashSet<NetUserId>());
 
@@ -262,11 +266,26 @@ public sealed partial class StationJobsSystem
                         }
                     } while (priorCount != stationShares[station]);
                 }
+
+                foreach (var (job, users) in jobPlayerOptions)
+                {
+                    foreach (var user in users)
+                    {
+                        deniedJobs.GetOrNew(user).TryAdd(job, JobDenialReason.SlotsFull);
+                    }
+                }
                 done: ;
             }
         }
 
         endFunc:
+
+        // For those without jobs, add in the denial reasons.
+        foreach (var user in userIdsIn.Where(id => !assigned.ContainsKey(id)))
+        {
+            assigned.Add(user, new JobAssignment(deniedJobs.GetOrNew(user)));
+        }
+
         return assigned;
     }
 
@@ -292,13 +311,21 @@ public sealed partial class StationJobsSystem
     /// <param name="weight">Weight to find, if any.</param>
     /// <param name="selectedPriority">Priority to find, if any.</param>
     /// <param name="players">Players to select from</param>
+    /// <param name="deniedJobs">A dictionary to keep track of why a job is being excluded for a player.
+    /// This is so that if a player fails to join a game, the reasons why are conveyed to the user to reduce
+    /// overall confusion.</param>
     /// <returns>Players and a list of their matching jobs.</returns>
-    private Dictionary<NetUserId, List<string>> GetPlayersJobCandidates(int? weight, JobPriority? selectedPriority, ICollection<NetUserId> players)
+    private Dictionary<NetUserId, List<string>> GetPlayersJobCandidates(
+        int? weight,
+        JobPriority? selectedPriority,
+        ICollection<NetUserId> players,
+        ref Dictionary<NetUserId, Dictionary<ProtoId<JobPrototype>, JobDenialReason>> deniedJobs)
     {
         var outputDict = new Dictionary<NetUserId, List<string>>(players.Count);
 
         foreach (var player in players)
         {
+            var playerDeniedJobs = deniedJobs.GetOrNew(player);
             var roleBans = _banManager.GetJobBans(player);
             var antagBlocked = _antag.GetPreSelectedAntagSessions();
 
@@ -325,8 +352,14 @@ public sealed partial class StationJobsSystem
 
             // Remove jobs that the player in ineligible for
             var profileJobs = filteredPlayerJobs.ToList();
-            var ev = new StationJobsGetCandidatesEvent(player, profileJobs);
+            var newDenials = new Dictionary<ProtoId<JobPrototype>, JobDenialReason>();
+            var ev = new StationJobsGetCandidatesEvent(player, profileJobs, newDenials);
             RaiseLocalEvent(ref ev);
+
+            foreach (var (job, reason) in newDenials)
+            {
+                playerDeniedJobs.TryAdd(job, reason);
+            }
 
             List<string>? availableJobs = null;
 
@@ -341,13 +374,19 @@ public sealed partial class StationJobsSystem
                     continue;
 
                 if (!job.CanBeAntag && (!_player.TryGetSessionById(player, out var session) || antagBlocked.Contains(session)))
+                {
+                    playerDeniedJobs.TryAdd(jobId, JobDenialReason.AntagIncompatible);
                     continue;
+                }
 
                 if (weight is not null && job.Weight != weight.Value)
                     continue;
 
                 if (!(roleBans == null || !roleBans.Contains(jobId)))
+                {
+                    playerDeniedJobs.TryAdd(jobId, JobDenialReason.RoleBanned);
                     continue;
+                }
 
                 availableJobs ??= new List<string>(playerJobs.Count);
                 availableJobs.Add(jobId);
@@ -358,5 +397,34 @@ public sealed partial class StationJobsSystem
         }
 
         return outputDict;
+    }
+}
+
+public enum JobDenialReason
+{
+    AntagIncompatible,
+    RoleBanned,
+    Whitelist,
+    JobRequirement,
+    SlotsFull,
+    NotOnStation,
+}
+
+public record struct JobAssignment
+{
+    public ProtoId<JobPrototype>? AssignedJob;
+    public EntityUid? AssignedStation;
+    public Dictionary<ProtoId<JobPrototype>, JobDenialReason>? DeniedJobs;
+
+    public JobAssignment(ProtoId<JobPrototype> job, EntityUid station)
+    {
+        AssignedJob = job;
+        AssignedStation = station;
+    }
+    public JobAssignment(Dictionary<ProtoId<JobPrototype>, JobDenialReason> deniedJobs)
+    {
+        AssignedJob = null;
+        AssignedStation = null;
+        DeniedJobs = deniedJobs;
     }
 }
