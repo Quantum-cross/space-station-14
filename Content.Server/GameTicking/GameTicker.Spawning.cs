@@ -196,6 +196,7 @@ namespace Content.Server.GameTicking
                     JobDenialReason.JobRequirement => Loc.GetString("job-not-available-job-requirements", ("jobName", jobName)),
                     JobDenialReason.SlotsFull => Loc.GetString("job-not-available-reason-slots-full", ("jobName", jobName)),
                     JobDenialReason.NotOnStation => Loc.GetString("job-not-available-reason-not-on-station", ("jobName", jobName)),
+                    JobDenialReason.AntagNoCharWithJob => Loc.GetString("job-not-available-reason-antag-no-char-with-job", ("jobName", jobName)),
                     _ => throw new ArgumentOutOfRangeException(),
                 });
             }

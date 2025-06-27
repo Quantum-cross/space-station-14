@@ -10,5 +10,6 @@ job-not-available-whitelist = You were not considered for {$jobName} because it 
 job-not-available-job-requirement = You were not considered for {$jobName} due to some job requirement (playtime, character age, species, etc).
 job-not-available-reason-slots-full = You were considered for {$jobName}, but all round start slots were taken.
 job-not-available-reason-not-on-station = You were not considered for {$jobName} because this role is not available on this station.
+job-not-available-reason-antag-no-char-with-job = You were considered for {$jobName}, but you had no {$jobName} characters compatible with your given antagonists.
 job-not-available-late-join-reminder = As a reminder, there may be additional late join slots available for certain roles.
 job-not-available-always-join-suggestion = If you wish to always join, please set your priority for {$fallbackJob} to at least Low, as this job has unlimited slots.
