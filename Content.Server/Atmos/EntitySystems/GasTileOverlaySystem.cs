@@ -290,6 +290,8 @@ namespace Content.Server.Atmos.EntitySystems
                    (strengthB <= 0f && strengthA > 0f) ||
                    (strengthA >= 1f && strengthB < 1f) || // change to or from 1
                    (strengthB >= 1f && strengthA < 1f) ||
+                   (tempA < TempAtColdBreathThreshold && tempB >= TempAtColdBreathThreshold) || // change from cold to hot
+                   (tempB < TempAtColdBreathThreshold && tempA >= TempAtColdBreathThreshold) ||
                    Math.Abs(strengthA - strengthB) > tolerance; // other change within tolerance
         }
 

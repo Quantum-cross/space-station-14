@@ -24,6 +24,8 @@ namespace Content.Shared.Atmos.EntitySystems
         private float _heatDistortionSlope;
         private float _heatDistortionIntercept;
 
+        protected const float TempAtColdBreathThreshold = 200.0f;
+
         public const byte ChunkSize = 8;
         protected float AccumulatedFrameTime;
         protected bool PvsEnabled;

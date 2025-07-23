@@ -1,4 +1,4 @@
-using Content.Server.Body.Systems;
+using Content.Shared.Body.Systems;
 using Content.Shared.Atmos;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Damage;
@@ -7,7 +7,7 @@ using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Server.Body.Components
 {
-    [RegisterComponent, Access(typeof(RespiratorSystem)), AutoGenerateComponentPause]
+    [RegisterComponent, Access(typeof(SharedRespiratorSystem)), AutoGenerateComponentPause]
     public sealed partial class RespiratorComponent : Component
     {
         /// <summary>
