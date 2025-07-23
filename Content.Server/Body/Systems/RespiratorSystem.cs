@@ -8,6 +8,7 @@ using Content.Shared.Atmos;
 using Content.Shared.Body.Components;
 using Content.Shared.Body.Events;
 using Content.Shared.Body.Prototypes;
+using Content.Shared.Body.Systems;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Reagent;
@@ -16,24 +17,20 @@ using Content.Shared.Database;
 using Content.Shared.EntityEffects;
 using Content.Shared.EntityEffects.EffectConditions;
 using Content.Shared.EntityEffects.Effects;
-using Content.Shared.Mobs.Systems;
 using JetBrains.Annotations;
 using Robust.Shared.Prototypes;
-using Robust.Shared.Timing;
 
 namespace Content.Server.Body.Systems;
 
 [UsedImplicitly]
-public sealed class RespiratorSystem : EntitySystem
+public sealed class RespiratorSystem : SharedRespiratorSystem
 {
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
-    [Dependency] private readonly IGameTiming _gameTiming = default!;
     [Dependency] private readonly AlertsSystem _alertsSystem = default!;
     [Dependency] private readonly AtmosphereSystem _atmosSys = default!;
     [Dependency] private readonly BodySystem _bodySystem = default!;
     [Dependency] private readonly DamageableSystem _damageableSys = default!;
     [Dependency] private readonly LungSystem _lungSystem = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly IPrototypeManager _protoMan = default!;
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainerSystem = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
@@ -60,64 +57,13 @@ public sealed class RespiratorSystem : EntitySystem
 
     private void OnMapInit(Entity<RespiratorComponent> ent, ref MapInitEvent args)
     {
-        ent.Comp.NextUpdate = _gameTiming.CurTime + ent.Comp.AdjustedUpdateInterval;
+        ent.Comp.NextUpdate = GameTiming.CurTime + ent.Comp.AdjustedUpdateInterval;
     }
 
-    public override void Update(float frameTime)
+    public override void Inhale(Entity<RespiratorComponent?> entity)
     {
-        base.Update(frameTime);
+        base.Inhale(entity);
 
-        var query = EntityQueryEnumerator<RespiratorComponent>();
-        while (query.MoveNext(out var uid, out var respirator))
-        {
-            if (_gameTiming.CurTime < respirator.NextUpdate)
-                continue;
-
-            respirator.NextUpdate += respirator.AdjustedUpdateInterval;
-
-            if (_mobState.IsDead(uid))
-                continue;
-
-            UpdateSaturation(uid, -(float)respirator.UpdateInterval.TotalSeconds, respirator);
-
-            if (!_mobState.IsIncapacitated(uid)) // cannot breathe in crit.
-            {
-                switch (respirator.Status)
-                {
-                    case RespiratorStatus.Inhaling:
-                        Inhale((uid, respirator));
-                        respirator.Status = RespiratorStatus.Exhaling;
-                        break;
-                    case RespiratorStatus.Exhaling:
-                        Exhale((uid, respirator));
-                        respirator.Status = RespiratorStatus.Inhaling;
-                        break;
-                }
-            }
-
-            if (respirator.Saturation < respirator.SuffocationThreshold)
-            {
-                if (_gameTiming.CurTime >= respirator.LastGaspEmoteTime + respirator.GaspEmoteCooldown)
-                {
-                    respirator.LastGaspEmoteTime = _gameTiming.CurTime;
-                    _chat.TryEmoteWithChat(uid,
-                        respirator.GaspEmote,
-                        ChatTransmitRange.HideChat,
-                        ignoreActionBlocker: true);
-                }
-
-                TakeSuffocationDamage((uid, respirator));
-                respirator.SuffocationCycles += 1;
-                continue;
-            }
-
-            StopSuffocation((uid, respirator));
-            respirator.SuffocationCycles = 0;
-        }
-    }
-
-    public void Inhale(Entity<RespiratorComponent?> entity)
-    {
         if (!Resolve(entity, ref entity.Comp, logMissing: false))
             return;
 
@@ -145,8 +91,10 @@ public sealed class RespiratorSystem : EntitySystem
         _atmosSys.Merge(ev.Gas, gas);
     }
 
-    public void Exhale(Entity<RespiratorComponent> entity)
+    public override void Exhale(Entity<RespiratorComponent> entity)
     {
+        base.Exhale(entity);
+
         // exhale gas
 
         var ev = new ExhaleLocationEvent();
@@ -178,7 +126,7 @@ public sealed class RespiratorSystem : EntitySystem
     /// </summary>
     public bool IsBreathing(Entity<RespiratorComponent?> ent)
     {
-        if (_mobState.IsIncapacitated(ent))
+        if (MobState.IsIncapacitated(ent))
             return false;
 
         if (!Resolve(ent, ref ent.Comp))
@@ -404,16 +352,6 @@ public sealed class RespiratorSystem : EntitySystem
         }
     }
 
-    public void UpdateSaturation(EntityUid uid, float amount, RespiratorComponent? respirator = null)
-    {
-        if (!Resolve(uid, ref respirator, false))
-            return;
-
-        respirator.Saturation += amount;
-        respirator.Saturation =
-            Math.Clamp(respirator.Saturation, respirator.MinSaturation, respirator.MaxSaturation);
-    }
-
     private void OnApplyMetabolicMultiplier(Entity<RespiratorComponent> ent, ref ApplyMetabolicMultiplierEvent args)
     {
         ent.Comp.UpdateIntervalMultiplier = args.Multiplier;
@@ -437,6 +375,28 @@ public sealed class RespiratorSystem : EntitySystem
         args.Handled = true;
 
         RemoveGasFromBody(entity, args.Gas);
+    }
+
+    protected override void UpdateSuffocation(Entity<RespiratorComponent> ent)
+    {
+        if (ent.Comp.Saturation < ent.Comp.SuffocationThreshold)
+        {
+            if (GameTiming.CurTime >= ent.Comp.LastGaspEmoteTime + ent.Comp.GaspEmoteCooldown)
+            {
+                ent.Comp.LastGaspEmoteTime = GameTiming.CurTime;
+                _chat.TryEmoteWithChat(ent.Owner,
+                    ent.Comp.GaspEmote,
+                    ChatTransmitRange.HideChat,
+                    ignoreActionBlocker: true);
+            }
+
+            TakeSuffocationDamage(ent);
+            ent.Comp.SuffocationCycles += 1;
+            return;
+        }
+
+        StopSuffocation(ent);
+        ent.Comp.SuffocationCycles = 0;
     }
 }
 
@@ -463,14 +423,6 @@ public record struct ExhaleLocationEvent(GasMixture? Gas);
 /// <param name="Succeeded">Whether we successfully managed to inhale the gas</param>
 [ByRefEvent]
 public record struct InhaledGasEvent(GasMixture Gas, bool Handled = false, bool Succeeded = false);
-
-/// <summary>
-/// Event raised when an entity is exhaling
-/// </summary>
-/// <param name="Gas">The gas mixture we're exhaling into.</param>
-/// <param name="Handled">Whether we have successfully exhaled or not.</param>
-[ByRefEvent]
-public record struct ExhaledGasEvent(GasMixture Gas, bool Handled = false);
 
 /// <summary>
 /// Raised when an entity starts suffocating and when suffocation progresses.

@@ -13,6 +13,8 @@ namespace Content.Shared.Atmos.EntitySystems
         private const float HeatDistortionSlope = 1.0f / (TempAtMaxHeatDistortion - TempAtMinHeatDistortion);
         private const float HeatDistortionIntercept = -TempAtMinHeatDistortion * HeatDistortionSlope;
 
+        protected const float TempAtColdBreathThreshold = 200.0f;
+
         public const byte ChunkSize = 8;
         protected float AccumulatedFrameTime;
         protected bool PvsEnabled;
