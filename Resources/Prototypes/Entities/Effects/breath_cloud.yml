@@ -1,0 +1,48 @@
+﻿- type: entity
+  id: BreathCloud
+  categories: [ HideSpawnMenu ]
+  save: false
+  components:
+  - type: MovedByPressure
+  - type: Transform
+  - type: Sprite
+    color: "#ffffff20"
+    sprite: Effects/crayondecals.rsi
+    drawdepth: Effects
+    layers:
+    - state: "brush"
+  - type: TimedDespawn
+    lifetime: 30
+#  - type: Tag
+#    tags:
+#    - HideContextMenu
+#  - type: CollisionWake
+#  - type: PredictedPhysics
+#  - type: AlwaysPredictedPhysics
+#  - type: ClientPhysics
+  - type: Physics
+    angularDamping: 0.02
+    linearDamping: 0.02
+    fixedRotation: false
+    bodyType: Dynamic
+#    sleepingAllowed: false
+#    ignoreGravity: true
+#    predict: true
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.25,-0.25,0.25,0.25"
+        density: 20
+        mask:
+        - ItemMask
+  - type: TileFrictionModifier
+    modifier: 0.4
+  - type: RandomWalk
+    accumulatorRatio: 1.0
+    maxSpeed: 0.5
+    minSpeed: 0.0
+    minStepCooldown: 0.5
+    maxStepCooldown: 0.5
+    resetBiasOnWalk: false

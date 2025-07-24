@@ -2,18 +2,21 @@ using Content.Shared.Body.Systems;
 using Content.Shared.Atmos;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Damage;
+using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Server.Body.Components
 {
-    [RegisterComponent, Access(typeof(SharedRespiratorSystem)), AutoGenerateComponentPause]
+    [RegisterComponent, Access(typeof(SharedRespiratorSystem))]
+    [AutoGenerateComponentPause, AutoGenerateComponentState]
+    [NetworkedComponent]
     public sealed partial class RespiratorComponent : Component
     {
         /// <summary>
         ///     Volume of our breath in liters
         /// </summary>
-        [DataField]
+        [DataField, AutoNetworkedField]
         public float BreathVolume = Atmospherics.BreathVolume;
 
         /// <summary>
@@ -25,20 +28,20 @@ namespace Content.Server.Body.Components
         /// <summary>
         ///     The next time that this body will inhale or exhale.
         /// </summary>
-        [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField]
+        [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField, AutoNetworkedField]
         public TimeSpan NextUpdate;
 
         /// <summary>
         ///     The interval between updates. Each update is either inhale or exhale,
         ///     so a full cycle takes twice as long.
         /// </summary>
-        [DataField]
+        [DataField, AutoNetworkedField]
         public TimeSpan UpdateInterval = TimeSpan.FromSeconds(2);
 
         /// <summary>
         /// Multiplier applied to <see cref="UpdateInterval"/> for adjusting based on metabolic rate multiplier.
         /// </summary>
-        [DataField]
+        [DataField, AutoNetworkedField]
         public float UpdateIntervalMultiplier = 1f;
 
         /// <summary>
@@ -100,7 +103,7 @@ namespace Content.Server.Body.Components
         [ViewVariables]
         public int SuffocationCycleThreshold = 3;
 
-        [ViewVariables]
+        [ViewVariables, AutoNetworkedField]
         public RespiratorStatus Status = RespiratorStatus.Inhaling;
     }
 }

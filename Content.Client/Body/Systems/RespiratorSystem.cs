@@ -6,6 +6,8 @@ using Content.Shared.Atmos.EntitySystems;
 using Content.Shared.Body.Systems;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
+using Robust.Shared.Physics.Systems;
+using Robust.Shared.Random;
 
 namespace Content.Client.Body.Systems;
 
@@ -17,6 +19,8 @@ public sealed class RespiratorSystem : SharedRespiratorSystem
     [Dependency] private readonly SharedGasTileOverlaySystem _gasTileOverlay = default!;
     [Dependency] private readonly SharedMapSystem _map = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     public override void DoExhaleEffect(Entity<RespiratorComponent> ent)
     {
@@ -53,9 +57,14 @@ public sealed class RespiratorSystem : SharedRespiratorSystem
             break;
         }
 
-        if (temperature > 250)
-            return;
+        // if (temperature > 250)
+            // return;
 
-        SpawnAttachedTo("Exclamation", new EntityCoordinates(ent.Owner, new Vector2(0f, 0f)));
+        var ownerVelocity = _physics.GetLinearVelocity(ent.Owner, Vector2.Zero);
+        var breathEnt = SpawnAtPosition("BreathCloud", new EntityCoordinates(ent.Owner, new Vector2(0f, 0f)));
+        _physics.SetLinearVelocity(breathEnt, ownerVelocity);
+        _physics.SetAngularVelocity(breathEnt, _random.NextFloat()*4f-2f);
+        _physics.WakeBody(breathEnt);
+
     }
 }
