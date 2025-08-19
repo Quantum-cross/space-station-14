@@ -2,4 +2,64 @@
   id: DonkFacts
   values:
     prefix: donk-facts-
-    count: 1
+    count: 3
+
+- type: localizedDataset
+  id: DonkpointerLocked
+  values:
+    prefix: donkpointer-locked-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerFar
+  values:
+    prefix: donkpointer-far-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerMedium
+  values:
+    prefix: donkpointer-medium-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerClose
+  values:
+    prefix: donkpointer-close-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerReached
+  values:
+    prefix: donkpointer-reached-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerFarToMedium
+  values:
+    prefix: donkpointer-far-to-medium-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerMediumToClose
+  values:
+    prefix: donkpointer-medium-to-close-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerCloseToMedium
+  values:
+    prefix: donkpointer-close-to-medium-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerMediumToFar
+  values:
+    prefix: donkpointer-medium-to-far-
+    count: 10
+
+- type: localizedDataset
+  id: DonkpointerRare
+  values:
+    prefix: donkpointer-rare-
+    count: 20

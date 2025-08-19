@@ -207,6 +207,19 @@
   - type: Pinpointer
     tag: DonkPocket
     targetName: Donk Pocket
+  - type: Icon
+    sprite: Objects/Devices/pinpointer.rsi
+    state: donkpointer
+  - type: Sprite
+    noRot: True
+    sprite: Objects/Devices/pinpointer.rsi
+    layers:
+    - state: donkpointer
+      map: [ "enum.PinpointerLayers.Base" ]
+    - state: pinonnull
+      map: [ "enum.PinpointerLayers.Screen" ]
+      shader: unshaded
+      visible: false
   - type: GenericVisualizer
     visuals:
       enum.PinpointerVisuals.IsActive:
@@ -220,7 +233,18 @@
           Close: { state: donkonclose }
           Medium: { state: donkonmedium }
           Far: { state: donkonfar }
-  - type: Advertise
-    pack: DonkFacts
-    minimumWait: 60
-    maximumWait: 240
+  - type: Speech
+    speechVerb: Robotic
+    speechSounds: Vending
+  - type: PinpointerVocal
+    lockedDataset: DonkpointerLocked
+    farDataset: DonkpointerFar
+    mediumDataset: DonkpointerMedium
+    closeDataset: DonkpointerClose
+    reachedDataset: DonkpointerReached
+    farToMediumDataset: DonkpointerFarToMedium
+    mediumToCloseDataset: DonkpointerMediumToClose
+    closeToMediumDataset: DonkpointerCloseToMedium
+    mediumToFarDataset: DonkpointerMediumToFar
+    rareDataset: DonkpointerRare
+    probOfDistanceChangeMessage: 0.1

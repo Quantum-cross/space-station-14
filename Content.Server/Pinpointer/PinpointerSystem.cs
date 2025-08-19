@@ -10,7 +10,7 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Server.Pinpointer;
 
-public sealed class PinpointerSystem : SharedPinpointerSystem
+public sealed partial class PinpointerSystem : SharedPinpointerSystem
 {
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
@@ -98,6 +98,9 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
             var target = FindTargetFromTag(uid, component.Tag);
             SetTarget(uid, target, component);
         }
+
+        var evt = new OnPinpointerTarget(uid, component.TargetName ?? "");
+        RaiseLocalEvent(uid, ref evt);
     }
 
     public override void Update(float frameTime)
@@ -194,7 +197,7 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
         {
             var angle = dirVec.Value.ToWorldAngle();
             TrySetArrowAngle(uid, angle, pinpointer);
-            var dist = CalculateDistance(dirVec.Value, pinpointer);
+            var dist = CalculateDistance(dirVec.Value, (uid, pinpointer));
             SetDistance(uid, dist, pinpointer);
         }
         else
@@ -228,16 +231,25 @@ public sealed class PinpointerSystem : SharedPinpointerSystem
         return dir;
     }
 
-    private Distance CalculateDistance(Vector2 vec, PinpointerComponent pinpointer)
+    private Distance CalculateDistance(Vector2 vec, Entity<PinpointerComponent> ent)
     {
+        var prevDistance = ent.Comp.DistanceToTarget;
         var dist = vec.Length();
-        if (dist <= pinpointer.ReachedDistance)
-            return Distance.Reached;
-        else if (dist <= pinpointer.CloseDistance)
-            return Distance.Close;
-        else if (dist <= pinpointer.MediumDistance)
-            return Distance.Medium;
+        var newDistance = prevDistance;
+        if (dist <= ent.Comp.ReachedDistance)
+            newDistance = Distance.Reached;
+        else if (dist <= ent.Comp.CloseDistance)
+            newDistance = Distance.Close;
+        else if (dist <= ent.Comp.MediumDistance)
+            newDistance = Distance.Medium;
         else
-            return Distance.Far;
+            newDistance = Distance.Far;
+
+        if(newDistance != prevDistance)
+        {
+            var evt = new OnPinpointerDistanceChanged(prevDistance, newDistance);
+            RaiseLocalEvent(ent, ref evt);
+        }
+        return newDistance;
     }
 }

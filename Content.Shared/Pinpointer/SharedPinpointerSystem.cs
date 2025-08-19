@@ -151,3 +151,9 @@ public abstract class SharedPinpointerSystem : EntitySystem
         component.CanRetarget = true;
     }
 }
+
+[ByRefEvent]
+public record struct OnPinpointerTarget(EntityUid Uid, string TargetName);
+
+[ByRefEvent]
+public record struct OnPinpointerDistanceChanged(Distance PrevDistance, Distance NewDistance);
