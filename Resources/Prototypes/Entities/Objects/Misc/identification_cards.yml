@@ -42,6 +42,42 @@
 
 - type: entity
   parent: AssistantIDCard
+  id: PassengerIDCard
+  name: Passenger ID card
+  components:
+  - type: PresetIdCard
+    job: Assistant
+    customJobTitle: Passenger
+
+- type: entity
+  parent: AssistantIDCard
+  id: OffDutyIDCard
+  name: Off-duty ID card
+  components:
+  - type: PresetIdCard
+    job: Assistant
+    customJobTitle: Off-duty
+
+- type: entity
+  parent: AssistantIDCard
+  id: UnemployedIDCard
+  name: Unemployed ID card
+  components:
+  - type: PresetIdCard
+    job: Assistant
+    customJobTitle: Unemployed
+
+- type: entity
+  parent: AssistantIDCard
+  id: RefugeeIDCard
+  name: Refugee ID card
+  components:
+  - type: PresetIdCard
+    job: Assistant
+    customJobTitle: Refugee
+
+- type: entity
+  parent: AssistantIDCard
   id: TechnicalAssistantIDCard
   name: technical assistant ID card
   components:

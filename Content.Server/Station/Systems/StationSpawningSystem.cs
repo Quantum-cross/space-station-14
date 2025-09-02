@@ -1,5 +1,6 @@
 using System.Linq;
 using Content.Server._Starlight.Medical.Limbs;
+using Content.Server.Access.Components;
 using Content.Server.Access.Systems;
 using Content.Server.Body.Systems;
 using Content.Server.GameTicking;
@@ -306,8 +307,13 @@ public sealed class StationSpawningSystem : SharedStationSpawningSystem
         if (!TryComp<IdCardComponent>(cardId, out var card))
             return;
 
+        // FarHorizons - custom job titles
+        string jobTitle = jobPrototype.LocalizedName;
+        if (TryComp<PresetIdCardComponent>(cardId, out var presetIdCard) && presetIdCard.CustomJobTitle != null)
+            jobTitle = presetIdCard.CustomJobTitle;
+        
         _cardSystem.TryChangeFullName(cardId, characterName, card);
-        _cardSystem.TryChangeJobTitle(cardId, jobPrototype.LocalizedName, card);
+        _cardSystem.TryChangeJobTitle(cardId, jobTitle, card);
 
         if (_prototypeManager.TryIndex(jobPrototype.Icon, out var jobIcon))
             _cardSystem.TryChangeJobIcon(cardId, jobIcon, card);

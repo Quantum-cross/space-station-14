@@ -181,6 +181,38 @@
     borderColor: "#717059"
 
 - type: entity
+  parent: AssistantPDA
+  id: PassengerPDA
+  name: passenger PDA
+  components:
+    - type: Pda
+      id: AssistantIDCard
+
+- type: entity
+  parent: AssistantPDA
+  id: OffDutyPDA
+  name: off-duty PDA
+  components:
+    - type: Pda
+      id: OffDutyIDCard
+
+- type: entity
+  parent: AssistantPDA
+  id: UnemployedPDA
+  name: unemployed PDA
+  components:
+    - type: Pda
+      id: UnemployedIDCard
+
+- type: entity
+  parent: AssistantPDA
+  id: RefugeePDA
+  name: refugee PDA
+  components:
+    - type: Pda
+      id: RefugeeIDCard
+
+- type: entity
   parent: BasePDA
   id: TechnicalAssistantPDA
   name: technical assistant PDA

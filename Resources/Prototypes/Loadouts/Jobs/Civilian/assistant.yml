@@ -124,3 +124,29 @@
   id: WinterBoots
   equipment:
     shoes: ClothingShoesBootsWinter
+
+# PDA and ID
+- type: loadout
+  id: AssistantPDA
+  equipment:
+    id: AssistantPDA
+
+- type: loadout
+  id: PassengerPDA
+  equipment:
+    id: PassengerPDA
+
+- type: loadout
+  id: OffDutyPDA
+  equipment:
+    id: OffDutyPDA
+
+- type: loadout
+  id: UnemployedPDA
+  equipment:
+    id: UnemployedPDA
+
+- type: loadout
+  id: RefugeePDA
+  equipment:
+    id: RefugeePDA

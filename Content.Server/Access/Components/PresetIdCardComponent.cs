@@ -11,4 +11,8 @@ public sealed partial class PresetIdCardComponent : Component
 
     [DataField("name")]
     public string? IdName;
+
+    // FarHorizons - custom job titles
+    [DataField("customJobTitle")]
+    public string? CustomJobTitle;
 }
