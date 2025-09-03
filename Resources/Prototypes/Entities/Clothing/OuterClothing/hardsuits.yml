@@ -284,7 +284,7 @@
         Piercing: 0.6
         Heat: 0.7 # Starlight Edit
         Caustic: 0.7
-    staminaModifier: 0.7
+    staminaModifier: 0.5 # SL: Default stun resistance
   - type: ClothingSpeedModifier
     walkModifier: 0.75
     sprintModifier: 0.75
@@ -359,7 +359,7 @@
         Piercing: 0.6
         Heat: 0.7 # Starlight Edit
         Caustic: 0.7
-    staminaModifier: 0.7
+    staminaModifier: 0.5 # SL: Default stun resistance
   - type: ClothingSpeedModifier
     walkModifier: 0.7
     sprintModifier: 0.7
@@ -638,6 +638,10 @@
     size: Huge
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/syndicate.rsi
+    equipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    unequipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    equipDelay: 0.5 #starlight
+    unequipDelay: 0.5 #starlight
   - type: PressureProtection
     highPressureMultiplier: 0.05
     lowPressureMultiplier: 1000
@@ -657,11 +661,16 @@
         Radiation: 0.5
         Caustic: 0.5
     staminaModifier: 0.3
-    ingoreKnockdown: true
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
   - type: HeldSpeedModifier
+  - type: FootstepModifier # STARLIGHT
+    footstepSoundCollection:
+      collection: TechMarch
+      params:
+        pitch: 0.9
+        variation: 0.09
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitSyndie
   - type: Tag
@@ -703,8 +712,45 @@
   components:
   - type: Sprite
     sprite: Clothing/OuterClothing/Hardsuits/syndieelite.rsi
+    layers:
+      - state: icon
+      - state: icon-unshaded
+        shader: unshaded
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/syndieelite.rsi
+    clothingVisuals:
+      outerClothing:
+        - state: equipped-OUTERCLOTHING
+        - state: equipped-OUTERCLOTHING-unshaded
+          shader: unshaded
+      outerClothing-vox:
+        - state: equipped-OUTERCLOTHING-vox
+        - state: equipped-OUTERCLOTHING-unshaded-vox
+          shader: unshaded
+      outerClothing-cyclorite:
+        - state: equipped-OUTERCLOTHING-cyclorite
+        - state: equipped-OUTERCLOTHING-unshaded-cyclorite
+          shader: unshaded
+      outerClothing-felionoid:
+        - state: equipped-OUTERCLOTHING-felionoid
+        - state: equipped-OUTERCLOTHING-unshaded-felionoid
+          shader: unshaded
+      outerClothing-vulpkanin:
+        - state: equipped-OUTERCLOTHING-vulpkanin
+        - state: equipped-OUTERCLOTHING-unshaded-vulpkanin
+          shader: unshaded
+      outerClothing-resomi:
+        - state: equipped-OUTERCLOTHING-resomi
+        - state: equipped-OUTERCLOTHING-unshaded-resomi
+          shader: unshaded
+      outerClothing-avali:
+        - state: equipped-OUTERCLOTHING-avali
+        - state: equipped-OUTERCLOTHING-unshaded-avali
+          shader: unshaded
+    equipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    unequipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    equipDelay: 0.5 #starlight
+    unequipDelay: 0.5 #starlight
   - type: PressureProtection
     highPressureMultiplier: 0.02
     lowPressureMultiplier: 1000
@@ -729,13 +775,18 @@
         Radiation: 0.01
         Caustic: 0.5
     staminaModifier: 0.2
-    ingoreKnockdown: true
   - type: Item
     size: Huge
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
   - type: HeldSpeedModifier
+  - type: FootstepModifier # STARLIGHT
+    footstepSoundCollection:
+      collection: TechMarch
+      params:
+        pitch: 0.8
+        variation: 0.09
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitSyndieElite
   - type: Tag
@@ -755,6 +806,10 @@
     sprite: Clothing/OuterClothing/Hardsuits/syndiecommander.rsi
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/syndiecommander.rsi
+    equipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    unequipSound: /Audio/Mecha/mechmove03.ogg #starlight
+    equipDelay: 0.5 #starlight
+    unequipDelay: 0.5 #starlight
   - type: PressureProtection
     highPressureMultiplier: 0.05
     lowPressureMultiplier: 1000
@@ -774,11 +829,16 @@
         Radiation: 0.25
         Caustic: 0.4
     staminaModifier: 0.1
-    ingoreKnockdown: true
   - type: ClothingSpeedModifier
     walkModifier: 0.95
     sprintModifier: 0.95
   - type: HeldSpeedModifier
+  - type: FootstepModifier # STARLIGHT
+    footstepSoundCollection:
+      collection: TechMarch
+      params:
+        pitch: 0.9
+        variation: 0.02
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitSyndieCommander
   - type: Tag
@@ -797,12 +857,45 @@
   components:
   - type: Sprite
     sprite: Clothing/OuterClothing/Hardsuits/cybersun.rsi
+    layers:
+      - state: icon
+      - state: icon-unshaded
+        shader: unshaded
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/cybersun.rsi
     equipSound: /Audio/Mecha/mechmove03.ogg #starlight
     unequipSound: /Audio/Mecha/mechmove03.ogg #starlight
     equipDelay: 3 #starlight
     unequipDelay: 3 #starlight
+    clothingVisuals:
+      outerClothing:
+        - state: equipped-OUTERCLOTHING
+        - state: equipped-OUTERCLOTHING-unshaded
+          shader: unshaded
+      outerClothing-vox:
+        - state: equipped-OUTERCLOTHING-vox
+        - state: equipped-OUTERCLOTHING-unshaded-vox
+          shader: unshaded
+      outerClothing-cyclorite:
+        - state: equipped-OUTERCLOTHING-cyclorite
+        - state: equipped-OUTERCLOTHING-unshaded-cyclorite
+          shader: unshaded
+      outerClothing-vulpkanin:
+        - state: equipped-OUTERCLOTHING-vulpkanin
+        - state: equipped-OUTERCLOTHING-unshaded-vulpkanin
+          shader: unshaded
+      outerClothing-felionoid:
+        - state: equipped-OUTERCLOTHING-felionoid
+        - state: equipped-OUTERCLOTHING-unshaded-felionoid
+          shader: unshaded
+      outerClothing-resomi:
+        - state: equipped-OUTERCLOTHING-resomi
+        - state: equipped-OUTERCLOTHING-unshaded-resomi
+          shader: unshaded
+      outerClothing-avali:
+        - state: equipped-OUTERCLOTHING-avali
+        - state: equipped-OUTERCLOTHING-unshaded-avali
+          shader: unshaded
   - type: PressureProtection
     highPressureMultiplier: 0.2
     lowPressureMultiplier: 1000
@@ -816,12 +909,11 @@
       coefficients:
         Blunt: 0.2
         Slash: 0.2
-        Piercing: 0.2
+        Piercing: 0.05 #starlight
         Heat: 0.2
         Radiation: 0.2
         Caustic: 0.2
     staminaModifier: 0.1
-    ingoreKnockdown: true
   - type: ClothingSpeedModifier
     walkModifier: 0.65
     sprintModifier: 0.65
@@ -1010,7 +1102,6 @@
         Radiation: 0.01 #sl Change
         Caustic: 0.4 #sl Change
     staminaModifier: 0.1
-    ingoreKnockdown: true
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitERTLeader
 
@@ -1023,8 +1114,13 @@
   components:
   - type: Sprite
     sprite: Clothing/OuterClothing/Hardsuits/ERTSuits/ertchaplain.rsi #if you change this, please update the humanoid.yml with a better markers sprite.
+    layers: # STARLIGHT
+      - state: icon
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/ERTSuits/ertchaplain.rsi
+    clothingVisuals: # STARLIGHT
+      outerClothing:
+        - state: equipped-OUTERCLOTHING
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitERTChaplain
 
@@ -1067,8 +1163,15 @@
   components:
   - type: Sprite
     sprite: Clothing/OuterClothing/Hardsuits/ERTSuits/ertsecurity.rsi
+    layers: # STARLIGHT
+      - state: icon
   - type: Clothing
     sprite: Clothing/OuterClothing/Hardsuits/ERTSuits/ertsecurity.rsi
+    clothingVisuals: # STARLIGHT
+      outerClothing:
+      - state: equipped-OUTERCLOTHING
+      outerClothing-vox:
+      - state: equipped-OUTERCLOTHING-vox
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitERTSecurity
   - type: Tag
@@ -1123,7 +1226,6 @@
         Radiation: 0.1
         Caustic: 0.1
     staminaModifier: 0.0
-    ingoreKnockdown: true
   - type: ClothingSpeedModifier
     walkModifier: 1.0
     sprintModifier: 1.0
@@ -1163,7 +1265,7 @@
         Shock: 0.1
         Radiation: 0.1
         Caustic: 0.1
-    staminaModifier: 0.2
+    staminaModifier: 0.5 # SL: Default stun resistance
   - type: ClothingSpeedModifier
     walkModifier: 1.0
     sprintModifier: 1.0
@@ -1198,7 +1300,6 @@
         Piercing: 0.9
         Caustic: 0.8
     staminaModifier: 0.8
-    ingoreKnockdown: true
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9

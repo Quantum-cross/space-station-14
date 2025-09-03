@@ -152,11 +152,6 @@
     Telecrystal: 8
   categories:
   - UplinkWeaponry
-  conditions:
-  - !type:StoreWhitelistCondition
-    whitelist:
-      tags:
-      - NukeOpsUplink
 
 - type: listing
   id: UplinkSniperBundle
@@ -365,7 +360,7 @@
   id: UplinkGrenadierRig
   name: uplink-grenadier-rig-name
   description: uplink-grenadier-rig-desc
-  productEntity: ClothingBeltMilitaryWebbingGrenadeFilled
+  productEntity: ClothingBeltOperativeWebbingGrenadeFilled
   discountCategory: veryRareDiscounts
   discountDownTo:
     Telecrystal: 6
@@ -506,8 +501,8 @@
 
 - type: listing
   id: UplinkPistol9mmMagazineSP
-  name: uplink-pistol-magazine-name
-  description: uplink-pistol-magazine-desc
+  name: uplink-pistol-magazine-nameSP
+  description: uplink-pistol-magazine-descSP
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Pistol/pistol_mag.rsi, state: red-icon }
   productEntity: MagazinePistolHP
   cost:
@@ -517,8 +512,8 @@
 
 - type: listing
   id: UplinkPistol9mmMagazineHP
-  name: uplink-pistol-magazine-name
-  description: uplink-pistol-magazine-desc
+  name: uplink-pistol-magazine-nameHP
+  description: uplink-pistol-magazine-descHP
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Pistol/pistol_mag.rsi, state: sp }
   productEntity: MagazinePistolSP
   cost:
@@ -528,8 +523,8 @@
 
 - type: listing
   id: UplinkPistol9mmMagazineFMJ
-  name: uplink-pistol-magazine-name
-  description: uplink-pistol-magazine-desc
+  name: uplink-pistol-magazine-nameFMJ
+  description: uplink-pistol-magazine-descFMJ
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Pistol/pistol_mag.rsi, state: fmj }
   productEntity: MagazinePistolFMJ
   cost:
@@ -543,7 +538,7 @@
   name: uplink-pistol-magazine-c20r-name
   description: uplink-pistol-magazine-c20r-desc
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Pistol/smg_mag.rsi, state: red-icon }
-  productEntity: MagazinePistolSubMachineGunSP
+  productEntity: MagazinePistolSubMachineGunFMJ
   cost:
     Telecrystal: 2
   categories:
@@ -1652,7 +1647,7 @@
   id: UplinkChestRig
   name: uplink-chest-rig-name
   description: uplink-chest-rig-desc
-  productEntity: ClothingBeltMilitaryWebbing
+  productEntity: ClothingBeltOperativeWebbing
   cost:
     Telecrystal: 1
   categories:
@@ -2324,3 +2319,39 @@
     Telecrystal: 2
   categories:
   - UplinkDeception
+
+- type: listing
+  id: UplinkAcolyteArmor
+  name: uplink-acolyte-armor-name
+  description: uplink-acolyte-armor-desc
+  icon: { sprite: Clothing/OuterClothing/Armor/cult_armour.rsi, state: icon}
+  productEntity: ClothingBackpackDuffelAcolyteBundle
+  discountCategory: veryRareDiscounts
+  discountDownTo:
+    Telecrystal: 3
+  cost:
+    Telecrystal: 4
+  categories:
+  - UplinkJob
+  conditions:
+  - !type:BuyerJobCondition
+    whitelist:
+    - Chaplain
+
+#- type: listing
+#  id: UplinkSawAdvanced
+#  name: uplink-saw-advanced-name
+#  description: uplink-saw-advanced-desc
+#  icon: { sprite:  Objects/Specific/Medical/Surgery/saw.rsi, state: advanced}
+#  productEntity: SawAdvanced
+#  discountCategory: rareDiscounts
+#  discountDownTo:
+#    Telecrystal: 1
+#  cost:
+#    Telecrystal: 2
+#  categories:
+#  - UplinkJob
+#  conditions:
+#  - !type:BuyerJobCondition
+#    whitelist:
+#    - MedicalDoctor
