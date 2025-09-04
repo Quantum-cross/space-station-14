@@ -1,6 +1,7 @@
 using Content.Server.Actions;
 using Content.Server.Chat.Systems;
 using Content.Shared._Starlight.Actions.Hailer;
+using Content.Shared.Chat;
 using Content.Shared.Inventory;
 using Content.Shared.Inventory.Events;
 using Content.Shared.Timing;
