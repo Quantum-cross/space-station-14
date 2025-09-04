@@ -2,12 +2,14 @@ using Content.Shared.Body.Systems;
 using Content.Shared.Atmos;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Damage;
+using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
 namespace Content.Server.Body.Components
 {
     [RegisterComponent, Access(typeof(SharedRespiratorSystem)), AutoGenerateComponentPause]
+    [NetworkedComponent, AutoGenerateComponentState]
     public sealed partial class RespiratorComponent : Component
     {
         /// <summary>
@@ -26,6 +28,7 @@ namespace Content.Server.Body.Components
         ///     The next time that this body will inhale or exhale.
         /// </summary>
         [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField]
+        [AutoNetworkedField]
         public TimeSpan NextUpdate;
 
         /// <summary>
@@ -33,12 +36,14 @@ namespace Content.Server.Body.Components
         ///     so a full cycle takes twice as long.
         /// </summary>
         [DataField]
+        [AutoNetworkedField]
         public TimeSpan UpdateInterval = TimeSpan.FromSeconds(2);
 
         /// <summary>
         /// Multiplier applied to <see cref="UpdateInterval"/> for adjusting based on metabolic rate multiplier.
         /// </summary>
         [DataField]
+        [AutoNetworkedField]
         public float UpdateIntervalMultiplier = 1f;
 
         /// <summary>
