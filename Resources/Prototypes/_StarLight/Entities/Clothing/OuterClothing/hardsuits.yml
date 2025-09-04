@@ -168,7 +168,7 @@
     - Hardsuit
     - WhitelistChameleon
 
-#CCNT Consortium BSOs
+#NTNC Consortium BSOs
 - type: entity
   parent: [ BaseCentcommContraband, ClothingOuterHardsuitSyndieElite ] #sl Change
   id: ClothingOuterHardsuitNTNCConsortium
@@ -177,6 +177,8 @@
   components:
   - type: Sprite
     sprite: _Starlight/Clothing/OuterClothing/Hardsuits/ntnc_hardsuit.rsi
+    layers: # STARLIGHT
+      - state: icon
   - type: Clothing
     sprite: _Starlight/Clothing/OuterClothing/Hardsuits/ntnc_hardsuit.rsi
   - type: ToggleableClothing
@@ -293,9 +295,9 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.4
-        Slash: 0.4
-        Piercing: 0.40
+        Blunt: 0.3
+        Slash: 0.3
+        Piercing: 0.3
         Heat: 0.35
         Radiation: 0.1
         Caustic: 0.4
