@@ -341,7 +341,6 @@
   name: engineering jumpsuit
   description: If this suit was non-conductive, maybe engineers would actually do their damn job.
   components:
-  - type: RollUpSleeves
   - type: Sprite
     sprite: Clothing/Uniforms/Jumpsuit/engineering.rsi
   - type: Clothing
