@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Content.Server.Access.Components;
 using Content.Server.Access.Systems;
 using Content.Server.Forensics;
 using Content.Shared.Access.Components;
@@ -158,11 +159,17 @@ public sealed class StationRecordsSystem : SharedStationRecordsSystem
             return;
         }
 
+        // FarHorizons - custom job titles
+        string jobTitle = jobPrototype.LocalizedName;
+        if (idUid.HasValue && _idCard.TryFindIdCard(idUid.Value, out var idCard) && 
+            TryComp<PresetIdCardComponent>(idCard, out var presetId) && presetId.CustomJobTitle != null)
+            jobTitle = presetId.CustomJobTitle;
+
         var record = new GeneralStationRecord()
         {
             Name = name,
             Age = age,
-            JobTitle = jobPrototype.LocalizedName,
+            JobTitle = jobTitle, // FarHorizons - custom job titles
             JobIcon = jobPrototype.Icon,
             JobPrototype = jobId,
             Species = species,

@@ -79,7 +79,11 @@ public sealed class PresetIdCardSystem : EntitySystem
 
         _accessSystem.SetAccessToJob(uid, job, extended);
 
-        _cardSystem.TryChangeJobTitle(uid, job.LocalizedName);
+        // FarHorizons - custom job titles
+        string jobName = job.LocalizedName;
+        if (id.CustomJobTitle != null)
+            jobName = id.CustomJobTitle;
+        _cardSystem.TryChangeJobTitle(uid, jobName);
         _cardSystem.TryChangeJobDepartment(uid, job);
 
         if (_prototypeManager.TryIndex(job.Icon, out var jobIcon))

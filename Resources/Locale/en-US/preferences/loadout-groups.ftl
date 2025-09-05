@@ -40,6 +40,7 @@ loadout-group-assistant-gloves = Assistant gloves
 loadout-group-assistant-outerclothing = Assistant outer clothing
 loadout-group-assistant-shoes = Assistant shoes
 loadout-group-assistant-neck = Assistant neck
+loadout-group-assistant-id = Assistant PDA
 
 loadout-group-bartender-head = Bartender head
 loadout-group-bartender-jumpsuit = Bartender jumpsuit
