@@ -106,6 +106,7 @@ namespace Content.Server.Body.Components
         public int SuffocationCycleThreshold = 3;
 
         [ViewVariables]
+        [AutoNetworkedField]
         public RespiratorStatus Status = RespiratorStatus.Inhaling;
     }
 }

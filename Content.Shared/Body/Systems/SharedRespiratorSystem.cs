@@ -43,6 +43,8 @@ public abstract class SharedRespiratorSystem : EntitySystem
             }
 
             UpdateSuffocation((uid, respirator));
+            if (GameTiming.CurTime < respirator.NextUpdate)
+                Dirty<RespiratorComponent>((uid, respirator));
         }
 
     }
