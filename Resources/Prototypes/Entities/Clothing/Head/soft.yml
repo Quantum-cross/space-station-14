@@ -259,7 +259,7 @@
   name: red cap
 
 - type: entity
-  parent: ClothingHeadHeadHatBaseFlippable
+  parent: ClothingHeadBase #ClothingHeadHeadHatBaseFlippable - Far Horizons - undo later when sprite is real
   id: ClothingHeadHatSecsoft
   name: security cap
   description: A baseball cap colored to match security's uniforms.
@@ -269,10 +269,10 @@
   - type: Clothing
     sprite: Clothing/Head/Soft/secsoft.rsi
 
-- type: entity
-  parent: [ClothingHeadHeadHatBaseFlipped, ClothingHeadHatSecsoft]
-  id: ClothingHeadHatSecsoftFlipped
-  name: security cap
+#- type: entity
+#  parent: [ClothingHeadHeadHatBaseFlipped, ClothingHeadHatSecsoft]
+#  id: ClothingHeadHatSecsoftFlipped
+#  name: security cap
 
 - type: entity
   parent: ClothingHeadHeadHatBaseFlippable
