@@ -31,3 +31,37 @@
     sprintModifier: 0.95
   - type: HeldSpeedModifier
   - type: GroupExamine
+
+- type: entity
+  parent: [ClothingOuterBaseLarge, AllowSuitStorageClothing]
+  id: ClothingOuterCoverallsAtmos
+  name: atmospherics coveralls 
+  description: A soft suit for atmospherics that allows items to be holstered on the back.
+  components:
+  - type: RollUpSleeves
+  - type: Sprite
+    sprite: _FarHorizons/Clothing/OuterClothing/Suits/atmos-coveralls.rsi
+  - type: Clothing
+    sprite: _FarHorizons/Clothing/OuterClothing/Suits/atmos-coveralls.rsi
+    equipSound: /Audio/Items/jumpsuit_equip.ogg
+    unequipSound: /Audio/Items/jumpsuit_equip.ogg
+    equipDelay: 1
+    unequipDelay: 1
+  - type: PressureProtection
+    highPressureMultiplier: 0.04
+  - type: TemperatureProtection
+    heatingCoefficient: 0.005
+    coolingCoefficient: 0.05
+  - type: Pierceable
+    level: Wood
+  - type: Armor
+    modifiers:
+      coefficients:
+        Slash: 0.9
+        Heat: 0.6
+        Cold: 0.6
+  - type: ClothingSpeedModifier
+    walkModifier: 0.95
+    sprintModifier: 0.95
+  - type: HeldSpeedModifier
+  - type: GroupExamine
