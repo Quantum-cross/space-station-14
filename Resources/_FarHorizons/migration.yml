@@ -1,0 +1,8 @@
+﻿# Example:
+# #  yyyy-mm-dd
+# ItemIdFrom: ItemIdTo - Change item
+# ItemIdFrom: null - Removes item from map
+
+# 2025-09-06 - Remove when ClothingHeadHatSecsoftFlipped is implemented
+
+ClothingHeadHatSecsoftFlipped: ClothingHeadHatSecsoft

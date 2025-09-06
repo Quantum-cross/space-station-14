@@ -269,6 +269,7 @@
   - type: Clothing
     sprite: Clothing/Head/Soft/secsoft.rsi
 
+# NOTE - Quantumcross: When this is implemented, remove from "Resources/_FarHorizons/migration.yml"
 #- type: entity
 #  parent: [ClothingHeadHeadHatBaseFlipped, ClothingHeadHatSecsoft]
 #  id: ClothingHeadHatSecsoftFlipped
