@@ -98,6 +98,10 @@ namespace Content.Server.Administration.Systems
 
             if (_adminManager.IsAdmin(player))
             {
+                var adminData = _adminManager.GetAdminData(player);
+                if (adminData == null)  // so compiler knows it is not null!
+                    return;
+
                 Verb mark = new();
                 mark.Text = Loc.GetString("toolshed-verb-mark");
                 mark.Message = Loc.GetString("toolshed-verb-mark-description");
@@ -139,103 +143,111 @@ namespace Content.Server.Administration.Systems
                     {
                         if (profile is not HumanoidCharacterProfile humanoid)
                             continue;
+                        
+                        if (adminData.HasFlag(AdminFlags.Spawn) || adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                            args.Verbs.Add(new Verb()
+                                {
+                                    Text = $"{slot}. {profile.Name}",
+                                    Category = VerbCategory.Spawn,
+                                    Act = () =>
+                                    {
+                                        if (!_transformSystem.TryGetMapOrGridCoordinates(args.Target, out var coords))
+                                        {
+                                            _popup.PopupEntity(Loc.GetString("admin-player-spawn-failed"), args.User, args.User);
+                                            return;
+                                        }
 
+                                        var stationUid = _stations.GetOwningStation(args.Target);
+
+                                        var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, humanoid, stationUid);
+
+                                        if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp))
+                                            _mindSystem.TransferTo(mindId, mobUid, true, mind: mindComp);
+
+                                    },
+                                    ConfirmationPopup = true,
+                                    Impact = LogImpact.High,
+                                });
+                        }
+
+                    if (adminData.HasFlag(AdminFlags.Spawn) || adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // Clone - Spawn but without the mind transfer, also spawns at the user's coordinates not the target's
                         args.Verbs.Add(new Verb()
                         {
-                            Text = $"{slot}. {profile.Name}",
-                            Category = VerbCategory.Spawn,
+                            Text = Loc.GetString("admin-player-actions-clone"),
+                            Category = VerbCategory.Admin,
                             Act = () =>
                             {
-                                if (!_transformSystem.TryGetMapOrGridCoordinates(args.Target, out var coords))
+                                if (!_transformSystem.TryGetMapOrGridCoordinates(args.User, out var coords))
                                 {
                                     _popup.PopupEntity(Loc.GetString("admin-player-spawn-failed"), args.User, args.User);
                                     return;
                                 }
 
                                 var stationUid = _stations.GetOwningStation(args.Target);
-
-                                var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, humanoid, stationUid);
-
-                                if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp))
-                                    _mindSystem.TransferTo(mindId, mobUid, true, mind: mindComp);
-
+                                var profile = _humanoidAppearance.GetBaseProfile(args.Target);
+                                _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid);
                             },
                             ConfirmationPopup = true,
                             Impact = LogImpact.High,
                         });
-                    }
 
-                    // Clone - Spawn but without the mind transfer, also spawns at the user's coordinates not the target's
-                    args.Verbs.Add(new Verb()
-                    {
-                        Text = Loc.GetString("admin-player-actions-clone"),
-                        Category = VerbCategory.Admin,
-                        Act = () =>
+                    
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // PlayerPanel
+                        args.Verbs.Add(new Verb
                         {
-                            if (!_transformSystem.TryGetMapOrGridCoordinates(args.User, out var coords))
-                            {
-                                _popup.PopupEntity(Loc.GetString("admin-player-spawn-failed"), args.User, args.User);
-                                return;
-                            }
-
-                            var stationUid = _stations.GetOwningStation(args.Target);
-                            var profile = _humanoidAppearance.GetBaseProfile(args.Target);
-                            _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid);
-                        },
-                        ConfirmationPopup = true,
-                        Impact = LogImpact.High,
-                    });
-
-                    // PlayerPanel
-                    args.Verbs.Add(new Verb
-                    {
-                        Text = Loc.GetString("admin-player-actions-player-panel"),
-                        Category = VerbCategory.Admin,
-                        Act = () => _console.ExecuteCommand(player, $"playerpanel \"{targetActor.PlayerSession.UserId}\""),
-                        Impact = LogImpact.Low
-                    });
+                            Text = Loc.GetString("admin-player-actions-player-panel"),
+                            Category = VerbCategory.Admin,
+                            Act = () => _console.ExecuteCommand(player, $"playerpanel \"{targetActor.PlayerSession.UserId}\""),
+                            Impact = LogImpact.Low
+                        });
                 }
 
                 if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp) && mindComp.UserId != null)
                 {
-                    // Erase
-                    args.Verbs.Add(new Verb
-                    {
-                        Text = Loc.GetString("admin-verbs-erase"),
-                        Message = Loc.GetString("admin-verbs-erase-description"),
-                        Category = VerbCategory.Admin,
-                        Icon = new SpriteSpecifier.Texture(
-                            new("/Textures/Interface/VerbIcons/delete_transparent.svg.192dpi.png")),
-                        Act = () =>
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // Erase
+                        args.Verbs.Add(new Verb
                         {
-                            _adminSystem.Erase(mindComp.UserId.Value);
-                        },
-                        Impact = LogImpact.Extreme,
-                        ConfirmationPopup = true
-                    });
+                            Text = Loc.GetString("admin-verbs-erase"),
+                            Message = Loc.GetString("admin-verbs-erase-description"),
+                            Category = VerbCategory.Admin,
+                            Icon = new SpriteSpecifier.Texture(
+                                new("/Textures/Interface/VerbIcons/delete_transparent.svg.192dpi.png")),
+                            Act = () =>
+                            {
+                                _adminSystem.Erase(mindComp.UserId.Value);
+                            },
+                            Impact = LogImpact.Extreme,
+                            ConfirmationPopup = true
+                        });
 
-                    // Respawn
-                    args.Verbs.Add(new Verb
-                    {
-                        Text = Loc.GetString("admin-player-actions-respawn"),
-                        Priority = -1,
-                        Category = VerbCategory.Spawn,
-                        Act = () =>
+                    if (adminData.HasFlag(AdminFlags.Spawn) || adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // Respawn
+                        args.Verbs.Add(new Verb
                         {
-                            _console.ExecuteCommand(player, $"respawn \"{mindComp.UserId}\"");
-                        },
-                        ConfirmationPopup = true,
-                        // No logimpact as the command does it internally.
-                    });
+                            Text = Loc.GetString("admin-player-actions-respawn"),
+                            Priority = -1,
+                            Category = VerbCategory.Spawn,
+                            Act = () =>
+                            {
+                                _console.ExecuteCommand(player, $"respawn \"{mindComp.UserId}\"");
+                            },
+                            ConfirmationPopup = true,
+                            // No logimpact as the command does it internally.
+                        });
 
-                    // Inspect mind
-                    args.Verbs.Add(new Verb
-                    {
-                        Text = Loc.GetString("inspect-mind-verb-get-data-text"),
-                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/sentient.svg.192dpi.png")),
-                        Category = VerbCategory.Debug,
-                        Act = () => _console.RemoteExecuteCommand(player, $"vv {GetNetEntity(mindId)}"),
-                    });
+                    
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // Inspect mind
+                        args.Verbs.Add(new Verb
+                        {
+                            Text = Loc.GetString("inspect-mind-verb-get-data-text"),
+                            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/sentient.svg.192dpi.png")),
+                            Category = VerbCategory.Debug,
+                            Act = () => _console.RemoteExecuteCommand(player, $"vv {GetNetEntity(mindId)}"),
+                        });
                 }
 
                 // Freeze
@@ -244,118 +256,124 @@ namespace Content.Server.Administration.Systems
 
                 if (!frozen)
                 {
-                    args.Verbs.Add(new Verb
-                    {
-                        Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
-                        Text = Loc.GetString("admin-verbs-freeze"),
-                        Category = VerbCategory.Admin,
-                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
-                        Act = () =>
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        args.Verbs.Add(new Verb
                         {
-                            EnsureComp<AdminFrozenComponent>(args.Target);
-                        },
-                        Impact = LogImpact.Medium,
-                    });
+                            Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
+                            Text = Loc.GetString("admin-verbs-freeze"),
+                            Category = VerbCategory.Admin,
+                            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
+                            Act = () =>
+                            {
+                                EnsureComp<AdminFrozenComponent>(args.Target);
+                            },
+                            Impact = LogImpact.Medium,
+                        });
                 }
 
                 if (!frozenAndMuted)
                 {
-                    // allow you to additionally mute someone when they are already frozen
-                    args.Verbs.Add(new Verb
-                    {
-                        Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
-                        Text = Loc.GetString("admin-verbs-freeze-and-mute"),
-                        Category = VerbCategory.Admin,
-                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
-                        Act = () =>
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        // allow you to additionally mute someone when they are already frozen
+                        args.Verbs.Add(new Verb
                         {
-                            _freeze.FreezeAndMute(args.Target);
-                        },
-                        Impact = LogImpact.Medium,
-                    });
+                            Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
+                            Text = Loc.GetString("admin-verbs-freeze-and-mute"),
+                            Category = VerbCategory.Admin,
+                            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
+                            Act = () =>
+                            {
+                                _freeze.FreezeAndMute(args.Target);
+                            },
+                            Impact = LogImpact.Medium,
+                        });
                 }
 
                 if (frozen)
                 {
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Moderator))
+                        args.Verbs.Add(new Verb
+                        {
+                            Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
+                            Text = Loc.GetString("admin-verbs-unfreeze"),
+                            Category = VerbCategory.Admin,
+                            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
+                            Act = () =>
+                            {
+                                RemComp<AdminFrozenComponent>(args.Target);
+                            },
+                            Impact = LogImpact.Medium,
+                        });
+                }
+
+
+                if (adminData.HasFlag(AdminFlags.Admin))
+                    // Admin Logs
+                    if (_adminManager.HasAdminFlag(player, AdminFlags.Logs))
+                    {
+                        Verb logsVerbEntity = new()
+                        {
+                            Priority = -2,
+                            Text = Loc.GetString("admin-verbs-admin-logs-entity"),
+                            Category = VerbCategory.Admin,
+                            Act = () =>
+                            {
+                                var ui = new AdminLogsEui();
+                                _euiManager.OpenEui(ui, player);
+                                ui.SetLogFilter(search: args.Target.Id.ToString());
+                            },
+                            Impact = LogImpact.Low
+                        };
+                        args.Verbs.Add(logsVerbEntity);
+                    }
+
+                if (adminData.HasFlag(AdminFlags.Admin))
+                    // TeleportTo
                     args.Verbs.Add(new Verb
                     {
-                        Priority = -1, // This is just so it doesn't change position in the menu between freeze/unfreeze.
-                        Text = Loc.GetString("admin-verbs-unfreeze"),
+                        Text = Loc.GetString("admin-verbs-teleport-to"),
                         Category = VerbCategory.Admin,
-                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/snow.svg.192dpi.png")),
+                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/open.svg.192dpi.png")),
                         Act = () =>
                         {
-                            RemComp<AdminFrozenComponent>(args.Target);
-                        },
-                        Impact = LogImpact.Medium,
-                    });
-                }
-
-
-                // Admin Logs
-                if (_adminManager.HasAdminFlag(player, AdminFlags.Logs))
-                {
-                    Verb logsVerbEntity = new()
-                    {
-                        Priority = -2,
-                        Text = Loc.GetString("admin-verbs-admin-logs-entity"),
-                        Category = VerbCategory.Admin,
-                        Act = () =>
-                        {
-                            var ui = new AdminLogsEui();
-                            _euiManager.OpenEui(ui, player);
-                            ui.SetLogFilter(search: args.Target.Id.ToString());
+                            _console.ExecuteCommand(player, $"tpto {GetNetEntity(args.Target)}");
                         },
                         Impact = LogImpact.Low
-                    };
-                    args.Verbs.Add(logsVerbEntity);
-                }
+                    });
 
-                // TeleportTo
-                args.Verbs.Add(new Verb
-                {
-                    Text = Loc.GetString("admin-verbs-teleport-to"),
-                    Category = VerbCategory.Admin,
-                    Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/open.svg.192dpi.png")),
-                    Act = () =>
+                if (adminData.HasFlag(AdminFlags.Admin))
+                    // TeleportHere
+                    args.Verbs.Add(new Verb
                     {
-                        _console.ExecuteCommand(player, $"tpto {GetNetEntity(args.Target)}");
-                    },
-                    Impact = LogImpact.Low
-                });
-
-                // TeleportHere
-                args.Verbs.Add(new Verb
-                {
-                    Text = Loc.GetString("admin-verbs-teleport-here"),
-                    Category = VerbCategory.Admin,
-                    Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/close.svg.192dpi.png")),
-                    Act = () =>
-                    {
-                        if (HasComp<MapGridComponent>(args.Target))
+                        Text = Loc.GetString("admin-verbs-teleport-here"),
+                        Category = VerbCategory.Admin,
+                        Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/close.svg.192dpi.png")),
+                        Act = () =>
                         {
-                            if (player.AttachedEntity != null)
+                            if (HasComp<MapGridComponent>(args.Target))
                             {
-                                var mapPos = _transformSystem.GetMapCoordinates(player.AttachedEntity.Value);
-                                if (TryComp(args.Target, out PhysicsComponent? targetPhysics))
+                                if (player.AttachedEntity != null)
                                 {
-                                    var offset = targetPhysics.LocalCenter;
-                                    var rotation = _transformSystem.GetWorldRotation(args.Target);
-                                    offset = rotation.RotateVec(offset);
+                                    var mapPos = _transformSystem.GetMapCoordinates(player.AttachedEntity.Value);
+                                    if (TryComp(args.Target, out PhysicsComponent? targetPhysics))
+                                    {
+                                        var offset = targetPhysics.LocalCenter;
+                                        var rotation = _transformSystem.GetWorldRotation(args.Target);
+                                        offset = rotation.RotateVec(offset);
 
-                                    mapPos = mapPos.Offset(-offset);
+                                        mapPos = mapPos.Offset(-offset);
+                                    }
+
+                                    _console.ExecuteCommand(player, $"tpgrid {GetNetEntity(args.Target)} {mapPos.X} {mapPos.Y} {mapPos.MapId}");
                                 }
-
-                                _console.ExecuteCommand(player, $"tpgrid {GetNetEntity(args.Target)} {mapPos.X} {mapPos.Y} {mapPos.MapId}");
                             }
-                        }
-                        else
-                        {
-                            _console.ExecuteCommand(player, $"tpto {args.User} {args.Target}");
-                        }
-                    },
-                    Impact = LogImpact.Low
-                });
+                            else
+                            {
+                                _console.ExecuteCommand(player, $"tpto {args.User} {args.Target}");
+                            }
+                        },
+                        Impact = LogImpact.Low
+                    });
 
                 // This logic is needed to be able to modify the AI's laws through its core and eye.
                 EntityUid? target = null;
@@ -382,22 +400,24 @@ namespace Content.Server.Administration.Systems
 
                 if (lawBoundComponent != null && target != null && _adminManager.HasAdminFlag(player, AdminFlags.Moderator))
                 {
-                    args.Verbs.Add(new Verb()
-                    {
-                        Text = Loc.GetString("silicon-law-ui-verb"),
-                        Category = VerbCategory.Admin,
-                        Act = () =>
+                    
+                    if (adminData.HasFlag(AdminFlags.Admin) || adminData.HasFlag(AdminFlags.Fun) || adminData.HasFlag(AdminFlags.VarEdit))
+                        args.Verbs.Add(new Verb()
                         {
-                            var ui = new SiliconLawEui(_siliconLawSystem, EntityManager, _adminManager);
-                            if (!_playerManager.TryGetSessionByEntity(args.User, out var session))
+                            Text = Loc.GetString("silicon-law-ui-verb"),
+                            Category = VerbCategory.Admin,
+                            Act = () =>
                             {
-                                return;
-                            }
-                            _euiManager.OpenEui(ui, session);
-                            ui.UpdateLaws(lawBoundComponent, target.Value);
-                        },
-                        Icon = new SpriteSpecifier.Rsi(new ResPath("/Textures/Interface/Actions/actions_borg.rsi"), "state-laws"),
-                    });
+                                var ui = new SiliconLawEui(_siliconLawSystem, EntityManager, _adminManager);
+                                if (!_playerManager.TryGetSessionByEntity(args.User, out var session))
+                                {
+                                    return;
+                                }
+                                _euiManager.OpenEui(ui, session);
+                                ui.UpdateLaws(lawBoundComponent, target.Value);
+                            },
+                            Icon = new SpriteSpecifier.Rsi(new ResPath("/Textures/Interface/Actions/actions_borg.rsi"), "state-laws"),
+                        });
                 }
 
                 // open camera
