@@ -159,6 +159,7 @@
     - id: RCD
     - id: RCDAmmo
     - id: AirGrenade
+    - id: ClothingOuterCoverallsAtmos
 
 - type: entityTable
   id: FillAtmosphericsHardsuit
@@ -202,7 +203,7 @@
     - id: RCD
     - id: RCDAmmo
     - id: MetalFoamGrenade
-    - id: ClothingOuterCoverallsEngi
+    - id: ClothingOuterCoverallsEngi # Far Horizons
 
 - type: entityTable
   id: FillEngineerHardsuit
