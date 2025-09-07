@@ -12,7 +12,7 @@
     - state: mag-0
       map: [ "enum.GunVisualLayers.Mag" ]
   - type: Clothing
-    sprite: _FarHorizons/Objects/Weapons/Guns/Rifles/ak.rsi
+    sprite: _FarHorizons/Objects/Weapons/Guns/Rifles/ak-205.rsi
   - type: Gun
     fireRate: 6
     soundGunshot:
