@@ -1,0 +1,58 @@
+- type: entity
+  name: AK-205
+  parent: [ BaseWeaponRifle, BaseMajorContraband ]
+  id: WeaponRifleAk205
+  description: An upgraded version of the AKMS, made for space combat. Feeds from .30 rifle magazines.
+  components:
+  - type: Sprite
+    sprite: _FarHorizons/Objects/Weapons/Guns/Rifles/ak-205.rsi
+    layers:
+    - state: base
+      map: [ "enum.GunVisualLayers.Base" ]
+    - state: mag-0
+      map: [ "enum.GunVisualLayers.Mag" ]
+  - type: Clothing
+    sprite: _FarHorizons/Objects/Weapons/Guns/Rifles/ak-205.rsi
+  - type: Gun
+    fireRate: 6
+    soundGunshot:
+      path: /Audio//Weapons/Guns/Gunshots/AK.ogg
+    minAngle: 30
+    maxAngle: 40
+  - type: GunWieldBonus
+    minAngle: -27
+    maxAngle: -30
+    angleIncrease: 2
+    angleDecay: 16
+  - type: ChamberMagazineAmmoProvider
+    boltClosed: null
+    soundRack:
+      path: /Audio/Weapons/Guns/Cock/ltrifle_cock.ogg
+  - type: ItemSlots
+    slots:
+      gun_magazine:
+        name: Magazine
+        startingItem: MagazineLightRifleSP
+        insertSound: /Audio/Weapons/Guns/MagIn/ltrifle_magin.ogg
+        ejectSound: /Audio/Weapons/Guns/MagOut/ltrifle_magout.ogg
+        priority: 2
+        whitelist:
+          tags:
+          - MagazineLightRifle
+        whitelistFailPopup: gun-magazine-whitelist-fail
+      gun_chamber:
+        name: Chamber
+        startingItem: CartridgeLightRifleSP
+        priority: 1
+        whitelist:
+          tags:
+          - CartridgeLightRifle
+  - type: ContainerContainer
+    containers:
+      gun_magazine: !type:ContainerSlot ""
+      gun_chamber: !type:ContainerSlot ""
+  - type: MagazineVisuals
+    magState: mag
+    steps: 1
+    zeroVisible: true
+  - type: Appearance

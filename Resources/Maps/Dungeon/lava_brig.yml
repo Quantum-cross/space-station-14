@@ -7289,18 +7289,6 @@ entities:
     - type: Transform
       pos: 25.824945,3.5783403
       parent: 588
-- proto: ClothingHeadHatSecsoftFlipped
-  entities:
-  - uid: 606
-    components:
-    - type: Transform
-      pos: 12.705482,6.671774
-      parent: 588
-  - uid: 1027
-    components:
-    - type: Transform
-      pos: 18.403675,25.53719
-      parent: 588
 - proto: ClothingHeadHatSurgcapPurple
   entities:
   - uid: 1711
