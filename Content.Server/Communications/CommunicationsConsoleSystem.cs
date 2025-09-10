@@ -20,6 +20,7 @@ using Content.Shared.Popups;
 using Robust.Server.GameObjects;
 using Robust.Shared.Configuration;
 using Content.Shared.Speech; //Starlight
+using Content.Shared.Radio.Components;//FarHorizons
 
 namespace Content.Server.Communications
 {
@@ -52,6 +53,7 @@ namespace Content.Server.Communications
             SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleBroadcastMessage>(OnBroadcastMessage);
             SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleCallEmergencyShuttleMessage>(OnCallShuttleMessage);
             SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleRecallEmergencyShuttleMessage>(OnRecallShuttleMessage);
+            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleSelectAnnouncementChannel>(OnSelectAnnouncementChannel); //FarHorizons
 
             // On console init, set cooldown
             SubscribeLocalEvent<CommunicationsConsoleComponent, MapInitEvent>(OnCommunicationsConsoleMapInit);
@@ -159,12 +161,28 @@ namespace Content.Server.Communications
                 }
             }
 
+            //FarHorizon Start
+            List<string>? channels = null;
+            string currentChannel = default!;
+            if (TryComp<EncryptionKeyComponent>(comp.Owner, out var keyComp))
+            {
+                channels = new();
+                foreach (var id in keyComp.Channels)
+                {
+                    channels.Add(id);
+                }
+                currentChannel = keyComp.DefaultChannel ?? "Common";
+            }
+            //FarHorizon End
+
             _uiSystem.SetUiState(uid, CommunicationsConsoleUiKey.Key, new CommunicationsConsoleInterfaceState(
                 CanAnnounce(comp),
                 CanCallOrRecall(comp),
                 levels,
                 currentLevel,
                 currentDelay,
+                channels, //FarHorizons
+                currentChannel, //FarHorizons
                 _roundEndSystem.ExpectedCountdownEnd
             ));
         }
@@ -226,6 +244,19 @@ namespace Content.Server.Communications
             }
         }
 
+        //FarHorizons Start
+        private void OnSelectAnnouncementChannel(EntityUid uid, CommunicationsConsoleComponent comp, CommunicationsConsoleSelectAnnouncementChannel message)
+        {
+            //Make it so it changes the defaultChannel to a new channel that is the selected one
+            //Then make it so it only announces it in that specific channel
+            if (TryComp<EncryptionKeyComponent>(comp.Owner, out var keyComp))
+            {
+                keyComp.DefaultChannel = message.Channel;
+                UpdateCommsConsoleInterface(uid, comp);
+            }
+        }
+        //FarHorizons End
+
         private void OnAnnounceMessage(EntityUid uid, CommunicationsConsoleComponent comp,
             CommunicationsConsoleAnnounceMessage message)
         {
@@ -277,9 +308,30 @@ namespace Content.Server.Communications
                 return;
             }
 
-            _chatSystem.DispatchCommunicationsConsoleAnnouncement(uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color); // 🌟Starlight🌟
+            //FarHorizons Start
+            string currentChannel = default!;
+            if (TryComp<EncryptionKeyComponent>(comp.Owner, out var keyComp))
+            {
+                currentChannel = keyComp.DefaultChannel ?? "Common";
+            }
+            else
+            {
+                currentChannel = "Common";
+            }
+            //FarHorizons End
 
-            _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following station announcement: {msg}");
+            if (currentChannel == "Common")
+            {
+                _chatSystem.DispatchCommunicationsConsoleAnnouncement(uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color); // 🌟Starlight🌟
+                _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following station announcement: {msg}");
+                return;
+            }
+            else
+            {
+                _chatSystem.DispatchFilteredCommunicationsConsoleAnnouncement(currentChannel, uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color); // 🌟Starlight🌟
+                _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following station announcement: {msg}");
+                return;
+            }
 
         }
 

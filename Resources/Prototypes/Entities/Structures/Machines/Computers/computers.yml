@@ -716,6 +716,20 @@
   - type: Damageable
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
+    #FarHorizonStart
+  - type: EncryptionKey
+    channels:
+    - Common
+    - Command
+    - Engineering
+    - Medical
+    - Science
+    - Security
+    - Service
+    - Supply
+    - Law
+    defaultChannel: Common
+    #FarHorizon
 
 - type: entity
   parent: ComputerComms
@@ -750,6 +764,12 @@
     radius: 1.5
     energy: 1.6
     color: "#f71713"
+    #FarHorizonStart
+  - type: EncryptionKey
+    channels:
+    - Common
+    defaultChannel: Common
+    #FarHorizon
 
 - type: entity
   parent: ComputerComms
@@ -784,6 +804,12 @@
     radius: 1.5
     energy: 1.6
     color: "#F317F3"
+    #FarHorizonStart
+  - type: EncryptionKey
+    channels:
+    - Common
+    defaultChannel: Common
+    #FarHorizon
 
 - type: entity
   parent: ComputerComms
