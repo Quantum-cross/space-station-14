@@ -24,8 +24,6 @@ using Content.Shared.Radio.Components;//FarHorizons
 using Content.Shared.Containers.ItemSlots;//FarHorizons
 using Robust.Shared.Timing;//FarHorizons
 
-using Robust.Shared.Log;
-
 namespace Content.Server.Communications
 {
     public sealed class CommunicationsConsoleSystem : EntitySystem
@@ -330,8 +328,6 @@ namespace Content.Server.Communications
             }
             else
             {
-                Logger.Info($"Sending to {comp.CurrentChannel}");
-                Logger.Info($"Global: {comp.Global}");
                 _chatSystem.DispatchFilteredCommunicationsConsoleAnnouncement(comp.CurrentChannel, uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color, Global:comp.Global); // 🌟Starlight🌟
                 _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following departmental announcement to {comp.CurrentChannel}: {msg}");
                 return;

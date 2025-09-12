@@ -43,8 +43,6 @@ using Content.Shared.Popups; // Starlight
 using Content.Shared.Radio.Components;//FarHorizons
 using Content.Server.Radio.Components;//FarHorizons
 
-using Robust.Shared.Log;
-
 namespace Content.Server.Chat.Systems;
 
 // TODO refactor whatever active warzone this class and chatmanager have become
@@ -533,7 +531,6 @@ public sealed partial class ChatSystem : SharedChatSystem
         bool Global = false)
     {   
         sender ??= Loc.GetString("chat-manager-sender-announcement");
-        Logger.Info($"DispatchFiltered Global: {Global}");
         var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message", ("sender", sender), ("message", FormattedMessage.EscapeText(message)));
 
         var inStation = Filter.Broadcast();
