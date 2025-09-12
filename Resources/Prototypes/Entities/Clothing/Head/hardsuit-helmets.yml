@@ -597,6 +597,7 @@
       params:
         variation: 0.09
     cooldownDuration: 30
+    useDelay: 30
   - type: Tag
     tags:
     - CorgiWearable
