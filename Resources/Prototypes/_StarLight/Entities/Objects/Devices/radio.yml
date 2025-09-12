@@ -6,8 +6,8 @@
   id: RadioHandheldExpedition
   components:
   - type: HandheldRadio
-    minFrequency: 60.0
-    maxFrequency: 140.0
+    frequencyMin: 60.0
+    frequencyMax: 140.0
     currentFrequency: 78.9
     micEnabled: false
     speakerEnabled: false

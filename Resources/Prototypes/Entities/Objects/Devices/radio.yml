@@ -6,8 +6,8 @@
   id: RadioHandheld
   components:
   - type: HandheldRadio
-    minFrequency: 80.0
-    maxFrequency: 140.0
+    frequencyMin: 80.0
+    frequencyMax: 140.0
     currentFrequency: 98.3
     micEnabled: false
     speakerEnabled: false
