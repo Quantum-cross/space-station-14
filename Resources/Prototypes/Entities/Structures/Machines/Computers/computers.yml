@@ -716,20 +716,27 @@
   - type: Damageable
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
-    #FarHorizonStart
-  - type: EncryptionKey
-    channels:
-    - Common
-    - Command
-    - Engineering
-    - Medical
-    - Science
-    - Security
-    - Service
-    - Supply
-    - Law
-    defaultChannel: Common
-    #FarHorizon
+    #FarHorizonsStart
+  - type: Lock
+    unlockOnClick: false
+  - type: ItemSlotsLock
+    slots:
+    - key_slot
+  - type: ItemSlots
+    slots:
+      key_slot:
+        name: key-slot
+        insertSuccessPopup: communication-channels-updated
+        startingItem: EncryptionKeyStationMaster
+        whitelist:
+          requireAll: true
+          components:
+          - EncryptionKey
+          - Item
+  - type: ContainerContainer
+    containers:
+      key_slot: !type:ContainerSlot
+    #FarHorizonsEnd
 
 - type: entity
   parent: ComputerComms
@@ -764,12 +771,27 @@
     radius: 1.5
     energy: 1.6
     color: "#f71713"
-    #FarHorizonStart
-  - type: EncryptionKey
-    channels:
-    - Common
-    defaultChannel: Common
-    #FarHorizon
+    #FarHorizonsStart
+  - type: Lock
+    unlockOnClick: false
+  - type: ItemSlotsLock
+    slots:
+    - key_slot
+  - type: ItemSlots
+    slots:
+      key_slot:
+        name: key-slot
+        insertSuccessPopup: communication-channels-updated
+        startingItem: EncryptionKeySyndie
+        whitelist:
+          requireAll: true
+          components:
+          - EncryptionKey
+          - Item
+  - type: ContainerContainer
+    containers:
+      key_slot: !type:ContainerSlot
+    #FarHorizonsEnd
 
 - type: entity
   parent: ComputerComms
@@ -804,12 +826,27 @@
     radius: 1.5
     energy: 1.6
     color: "#F317F3"
-    #FarHorizonStart
-  - type: EncryptionKey
-    channels:
-    - Common
-    defaultChannel: Common
-    #FarHorizon
+    #FarHorizonsStart
+  - type: Lock
+    unlockOnClick: false
+  - type: ItemSlotsLock
+    slots:
+    - key_slot
+  - type: ItemSlots
+    slots:
+      key_slot:
+        name: key-slot
+        insertSuccessPopup: communication-channels-updated
+        startingItem: EncryptionKeyCommon
+        whitelist:
+          requireAll: true
+          components:
+          - EncryptionKey
+          - Item
+  - type: ContainerContainer
+    containers:
+      key_slot: !type:ContainerSlot
+    #FarHorizonsEnd
 
 - type: entity
   parent: ComputerComms
@@ -842,6 +879,27 @@
     radius: 1.5
     energy: 1.6
     color: "#00FF00"
+    #FarHorizonsStart
+  - type: Lock
+    unlockOnClick: false
+  - type: ItemSlotsLock
+    slots:
+    - key_slot
+  - type: ItemSlots
+    slots:
+      key_slot:
+        name: key-slot
+        insertSuccessPopup: communication-channels-updated
+        startingItem: EncryptionKeyStationMaster
+        whitelist:
+          requireAll: true
+          components:
+          - EncryptionKey
+          - Item
+  - type: ContainerContainer
+    containers:
+      key_slot: !type:ContainerSlot
+    #FarHorizonsEnd
 
 - type: entity
   parent: BaseComputerAiAccess

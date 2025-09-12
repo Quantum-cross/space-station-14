@@ -41,7 +41,9 @@ using Content.Server._Starlight.Language; // Starlight
 using Content.Shared._Starlight.Language; // Starlight
 using Content.Shared.Popups; // Starlight
 using Content.Shared.Radio.Components;//FarHorizons
-using Content.Shared.Inventory;//FarHorizons
+using Content.Server.Radio.Components;//FarHorizons
+
+using Robust.Shared.Log;
 
 namespace Content.Server.Chat.Systems;
 
@@ -58,7 +60,6 @@ public sealed partial class ChatSystem : SharedChatSystem
     [Dependency] private readonly IChatSanitizationManager _sanitizer = default!;
     [Dependency] private readonly IAdminManager _adminManager = default!;
     [Dependency] private readonly IPlayerManager _playerManager = default!;
-    [Dependency] private readonly InventorySystem _inventorySystem = default!; //FarHorizons
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
@@ -528,22 +529,26 @@ public sealed partial class ChatSystem : SharedChatSystem
         string? sender = null,
         bool playSound = true,
         SoundSpecifier? announcementSound = null,
-        Color? colorOverride = null)
-    {
+        Color? colorOverride = null,
+        bool Global = false)
+    {   
         sender ??= Loc.GetString("chat-manager-sender-announcement");
-
+        Logger.Info($"DispatchFiltered Global: {Global}");
         var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message", ("sender", sender), ("message", FormattedMessage.EscapeText(message)));
 
-        var station = _stationSystem.GetOwningStation(source);
-
-        if (station == null)
+        var inStation = Filter.Broadcast();
+        if (!Global)
         {
-            // you can't make a communications console announcement without a station
-            return;
-        }
-        if (!EntityManager.TryGetComponent<StationDataComponent>(station, out var stationDataComp)) return;
+            var station = _stationSystem.GetOwningStation(source);
 
-        var inStation = _stationSystem.GetInStation(stationDataComp);
+            if (station == null)
+            {
+                // you can't make a communications console announcement without a station
+                return;
+            }
+            if (!EntityManager.TryGetComponent<StationDataComponent>(station, out var stationDataComp)) return;
+            inStation = _stationSystem.GetInStation(stationDataComp);
+        }
         var filter = ChannelFilter(channel, inStation);
 
         // Custom behavior: For example, change the chat channel or message formatting here if needed
@@ -562,8 +567,6 @@ public sealed partial class ChatSystem : SharedChatSystem
             Message = message,
             Source = filter
         });
-
-        _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Communications Console Announcement on {station} from {sender}: {message}");
     }
 
     // FarHorizons End
@@ -1265,9 +1268,17 @@ public sealed partial class ChatSystem : SharedChatSystem
             if (uid == null)
                 return true;
 
-            if (_inventorySystem.TryGetSlotEntity(uid.Value, "ears", out var headsetEntity) && TryComp<EncryptionKeyHolderComponent>(headsetEntity, out var keyComp))
+            if (TryComp<WearingHeadsetComponent>(uid.Value, out var headsetEntity) && TryComp<ActiveRadioComponent>(headsetEntity.Headset, out var keyComp))
             {
                 foreach (var id in keyComp.Channels)
+                {
+                    if (channel == id)
+                        return false;
+                }
+            }
+            if (TryComp<ActiveRadioComponent>(uid.Value, out var ActiveRadio))
+            {
+                foreach (var id in ActiveRadio.Channels)
                 {
                     if (channel == id)
                         return false;
