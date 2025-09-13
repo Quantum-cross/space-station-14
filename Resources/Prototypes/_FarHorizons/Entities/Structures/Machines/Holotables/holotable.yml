@@ -52,33 +52,51 @@
   parent: HolotableBase
   name: generic holotable
   components:
-- type: Sprite
-  sprite: _FarHorizons/Structures/Machines/HoloTables/holotable.rsi
-  layers:
-      - state: holotable
-- type: Icon
-  sprite: _FarHorizons/Structures/Machines/HoloTables/holotable.rsi
-- type: Appearance
+  - type: Sprite
+    sprite: _FarHorizons/Structures/Machines/HoloTables/holotable.rsi
+    layers:
+      - map: ["holotable"]
+        state: holotable
+      - type: Icon
+        sprite: _FarHorizons/Structures/Machines/HoloTables/holotable.rsi
+  - type: Appearance
+  - type: PointLight
+    radius: 3
+    energy: 2
+    color: "#66ccde"
 
-- type: PointLight
-  radius: 3
-  energy: 2
-  color: "#66ccde"
-    
 - type: entity
   id: EngineeringHolotable
   parent: HolotableBase
   name: engineering holotable
   components:
-- type: Sprite
-  sprite: _FarHorizons/Structures/Machines/HoloTables/engineering_holotable.rsi
-  layers:
-  - state: engiholo
-  - type: Icon
-    sprite: _FarHorizons/Structures/Machines/HoloTables/engineering_holotable.rsi
-- type: Appearance
+    - type: Sprite
+      sprite: _FarHorizons/Structures/Machines/HoloTables/engineering_holotable.rsi
+      layers:
+        - state: engiholo
+        - type: Icon
+          sprite: _FarHorizons/Structures/Machines/HoloTables/engineering_holotable.rsi
+    - type: Appearance
 
-- type: PointLight
-  radius: 3
-  energy: 2
-  color: "#d9b12e"
+    - type: PointLight
+      radius: 3
+      energy: 2
+      color: "#d9b12e"
+
+    - type: PowerMonitoringConsole
+    - type: PowerMonitoringCableNetworks
+    - type: NodeContainer
+      examinable: true
+      nodes:
+        hv:
+          !type:CableDeviceNode
+          nodeGroupID: HVPower
+    - type: ActivatableUI
+      singleUser: true
+      key: enum.PowerMonitoringConsoleUiKey.Key
+    - type: UserInterface
+      interfaces:
+        enum.PowerMonitoringConsoleUiKey.Key:
+          type: PowerMonitoringConsoleBoundUserInterface
+        enum.WiresUiKey.Key:
+          type: WiresBoundUserInterface
