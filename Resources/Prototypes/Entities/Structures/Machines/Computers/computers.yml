@@ -727,12 +727,15 @@
       key_slot:
         name: key-slot
         insertSuccessPopup: communication-channels-updated
-        startingItem: EncryptionKeyStationMaster
         whitelist:
           requireAll: true
           components:
           - EncryptionKey
           - Item
+  - type: ContainerFill
+    containers:
+      key_slot:
+      - EncryptionKeyStationMaster
   - type: ContainerContainer
     containers:
       key_slot: !type:ContainerSlot
@@ -782,12 +785,15 @@
       key_slot:
         name: key-slot
         insertSuccessPopup: communication-channels-updated
-        startingItem: EncryptionKeySyndie
         whitelist:
           requireAll: true
           components:
           - EncryptionKey
           - Item
+  - type: ContainerFill
+    containers:
+      key_slot:
+      - EncryptionKeySyndie
   - type: ContainerContainer
     containers:
       key_slot: !type:ContainerSlot
@@ -837,12 +843,15 @@
       key_slot:
         name: key-slot
         insertSuccessPopup: communication-channels-updated
-        startingItem: EncryptionKeyCommon
         whitelist:
           requireAll: true
           components:
           - EncryptionKey
           - Item
+  - type: ContainerFill
+    containers:
+      key_slot:
+      - EncryptionKeyCommon
   - type: ContainerContainer
     containers:
       key_slot: !type:ContainerSlot
@@ -890,12 +899,15 @@
       key_slot:
         name: key-slot
         insertSuccessPopup: communication-channels-updated
-        startingItem: EncryptionKeyStationMaster
         whitelist:
           requireAll: true
           components:
           - EncryptionKey
           - Item
+  - type: ContainerFill
+    containers:
+      key_slot:
+      - EncryptionKeyStationMaster
   - type: ContainerContainer
     containers:
       key_slot: !type:ContainerSlot

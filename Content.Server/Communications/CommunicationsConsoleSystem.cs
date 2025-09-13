@@ -23,6 +23,8 @@ using Content.Shared.Speech; //Starlight
 using Content.Shared.Radio.Components;//FarHorizons
 using Content.Shared.Containers.ItemSlots;//FarHorizons
 using Robust.Shared.Timing;//FarHorizons
+using Content.Server.Construction;//FarHorizons
+using Content.Shared.Containers;//FarHorizons
 
 namespace Content.Server.Communications
 {
@@ -62,6 +64,7 @@ namespace Content.Server.Communications
 
             SubscribeLocalEvent<CommunicationsConsoleComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);//FarHorizons
             SubscribeLocalEvent<CommunicationsConsoleComponent, ItemSlotEjectAttemptEvent>(OnEjectAttempt);//FarHorizons
+            SubscribeLocalEvent<CommunicationsConsoleComponent, ConstructionChangeEntityEvent>(OnConstructionChangeEntityEvent);
         }
 
         public override void Update(float frameTime)
@@ -184,7 +187,7 @@ namespace Content.Server.Communications
                         }
                         if (!hasCommon)
                             comp.Channels.Add("Common");
-                            
+
                         if (comp.CurrentChannel == "No Channels Available")
                             comp.CurrentChannel = keyComp.DefaultChannel ?? "Common";
                     }
@@ -328,7 +331,7 @@ namespace Content.Server.Communications
             }
             else
             {
-                _chatSystem.DispatchFilteredCommunicationsConsoleAnnouncement(comp.CurrentChannel, uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color, Global:comp.Global); // 🌟Starlight🌟
+                _chatSystem.DispatchFilteredCommunicationsConsoleAnnouncement(comp.CurrentChannel, uid, msg, title, announcementSound: comp.Sound, colorOverride: comp.Color, Global: comp.Global); // 🌟Starlight🌟
                 _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following departmental announcement to {comp.CurrentChannel}: {msg}");
                 return;
             }
@@ -402,6 +405,22 @@ namespace Content.Server.Communications
             comp.Channels = new List<string> { "No Channels Available" };
             Timer.Spawn(0, () => UpdateCommsConsoleInterface(uid, Comp<CommunicationsConsoleComponent>(uid)));
         }
+
+        private void OnConstructionChangeEntityEvent(EntityUid uid, CommunicationsConsoleComponent comp, ref ConstructionChangeEntityEvent args)
+        {
+            var newUid = args.New;
+            if (newUid == null)
+                return;
+
+            if (TryComp<ContainerFillComponent>(newUid, out var ContainerComp))
+            {
+                foreach (var id in ContainerComp.Containers)
+                {
+                    ContainerComp.Containers.Remove(id.Key);
+                }
+            }
+        }
+
         //FarHorizons End
     }
 
