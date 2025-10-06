@@ -12,18 +12,22 @@ using Prometheus;
 using Robust.Shared.Configuration;
 using System.IO;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using NAudio.Wave;
 using NAudio.Dsp;
 using NAudio.Wave.SampleProviders;
 using NAudio.Mixer;
 using OggVorbisEncoder;
 using System.Runtime.CompilerServices;
+using Content.Shared.Starlight.TextToSpeech;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Starlight.TextToSpeech;
 
 public sealed class TTSManager : ITTSManager
 {
     [Robust.Shared.IoC.Dependency] private readonly IConfigurationManager _cfg = default!;
+    [Robust.Shared.IoC.Dependency] private readonly IPrototypeManager _protoMan = default!;
 
     private static readonly Histogram RequestTime = Metrics.CreateHistogram(
         "tts_time",
@@ -54,6 +58,8 @@ public sealed class TTSManager : ITTSManager
     private string _apiUrl = string.Empty;
     private string _apiToken = string.Empty;
     private int _timeout = 7;
+    
+    private Dictionary<int, string>? _voiceIdsDictionary = null;
 
     public void Initialize()
     {
@@ -61,6 +67,18 @@ public sealed class TTSManager : ITTSManager
         _cfg.OnValueChanged(StarlightCCVars.TTSApiUrl, x => _apiUrl = x, true);
         _cfg.OnValueChanged(StarlightCCVars.TTSApiToken, x => _apiToken = x, true);
         _cfg.OnValueChanged(StarlightCCVars.TTSApiTimeout, x => _timeout = x, true);
+
+        _protoMan.PrototypesReloaded += OnPrototypesReloaded;
+
+    }
+
+    private void OnPrototypesReloaded(PrototypesReloadedEventArgs obj)
+    {
+        _sawmill.Info("Reloading voice prototypes");
+        if (!obj.WasModified<VoicePrototype>())
+            return;
+        
+        InitializeVoiceDictionary();
     }
 
     public async Task<byte[]?> ConvertTextToSpeechStandard(int voice, string text)
@@ -84,17 +102,33 @@ public sealed class TTSManager : ITTSManager
         _sawmill.Verbose($"Generate new audio for '{text}' speech by voice ID '{voiceId}'");
         var stopwatch = Stopwatch.StartNew();
 
-        var jsonBody = JsonSerializer.Serialize(new TTSRequest
+        // var jsonBody = JsonSerializer.Serialize(new TTSRequest
+        // {
+        //     VoiceId = voiceId,
+        //     Text = text,
+        //     PitchShift = 1.0,
+        //     SpeedMultiplier = 1.0,
+        //     Effect = isRadio ? Effect.Radio : 0,
+        // });
+
+        if (_voiceIdsDictionary is null)
         {
-            VoiceId = voiceId,
+            InitializeVoiceDictionary();
+        }
+        
+        if (!_voiceIdsDictionary.TryGetValue(voiceId, out var voiceIdString))
+        {
+            _sawmill.Error($"TTS request with bad voice ID: {voiceId}");
+            return null;
+        }
+        var jsonBody = JsonSerializer.Serialize(new TTSRequest2
+        {
+            VoiceId = voiceIdString,
             Text = text,
-            PitchShift = 1.0,
-            SpeedMultiplier = 1.0,
-            Effect = isRadio ? Effect.Radio : 0,
         });
+        
         var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
         content.Headers.Add("X-Api-Key", _apiToken);
-        var requestUrl = string.Format(_apiUrl, _apiToken);
 
         try
         {
@@ -131,6 +165,18 @@ public sealed class TTSManager : ITTSManager
         }
     }
 
+    [MemberNotNull(member: nameof(_voiceIdsDictionary))]
+    private void InitializeVoiceDictionary()
+    {
+        _voiceIdsDictionary ??= new Dictionary<int, string>();
+        _voiceIdsDictionary.Clear();
+        foreach (var voice in _protoMan.EnumeratePrototypes<VoicePrototype>())
+        {
+            _sawmill.Info($"Adding voice {voice.Voice}: {voice.ID} to dictionary.");
+            _voiceIdsDictionary.Add(voice.Voice, voice.ID);
+        }
+    }
+
     private record TTSRequest
     {
         [JsonPropertyName("voiceId")]
@@ -147,6 +193,23 @@ public sealed class TTSManager : ITTSManager
         [JsonPropertyName("effect")]
         public Effect Effect { get; set; } = Effect.None;
     }
+
+    private record TTSRequest2
+    {
+        [JsonPropertyName("reference_id")] public string VoiceId { get; set; } = null!;
+
+        [JsonPropertyName("text")] public string Text { get; set; } = null!;
+
+        [JsonPropertyName("temperature")]
+        public float Temperature = 0.9f;
+
+        [JsonPropertyName("chunk_length")]
+        public int ChunkLength = 400;
+
+        [JsonPropertyName("top_p")]
+        public float TopP = 0.5f;
+}
+    
     [Flags]
     public enum Effect
     {

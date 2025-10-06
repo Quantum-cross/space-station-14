@@ -352,9 +352,10 @@ public sealed partial class TTSSystem : EntitySystem
     private static readonly IReadOnlyDictionary<string, string> _wordReplacement =
         new Dictionary<string, string>()
         {
-            {"id", "Ai Di"},
-            {"pda", "PiDiA"},
-            {"sci", "sai"},
+            // {"id", "Ai Di"},
+            // {"pda", "PiDiA"},
+            // {"sci", "sai"},
+            {"sci", "Psi"},
 
             //owo
             {"(•`ω´•)", "meow"},
